@@ -1,0 +1,77 @@
+{
+  "repository": "mewmix/asm2464pd-opal",
+  "branch": "agent/full-firmware-lifecycle",
+  "commit": "acc935d351d49c66ab8d1026ee8cb4617609f782",
+  "files": [
+    {
+      "path": "emulate/README.md",
+      "git_blob_sha1": "367a2218ba8379716a45b81b78b8185d6bb57f54",
+      "sha256": "fe04c2f4aa6f32e08aaed06e5f607b7ac14e68e1e476a2ac4305d35eb89d0348"
+    },
+    {
+      "path": "emulate/__init__.py",
+      "git_blob_sha1": "8164fdd74fbecba274423aff9572750ebe0e192f",
+      "sha256": "18be549442bb7ea2978682a212e8e316ab949aa5d92446b6a09e6ed533be8676"
+    },
+    {
+      "path": "emulate/cpu.py",
+      "git_blob_sha1": "8015e3827ec94e13d8a89cb76c6f2e73fa06b9f8",
+      "sha256": "c5d20767026b1aa97ae1dd6320f9103864b463550d96adfe749cca0325888be6"
+    },
+    {
+      "path": "emulate/disasm8051.py",
+      "git_blob_sha1": "10fe1de1e800b1647512c7329cfe8b2c9f5f041e",
+      "sha256": "500e4d15a7781bd271febab35ed0a67d2033efcfd291652399d44260d56f13ef"
+    },
+    {
+      "path": "emulate/emu.py",
+      "git_blob_sha1": "10ccacc86359ccbe36ab74d71757797f1c91b5a4",
+      "sha256": "851e55382dff2c7ee24f22478a1945cf9f16a9deefcaf304ddda07711e9e0061"
+    },
+    {
+      "path": "emulate/hardware.py",
+      "git_blob_sha1": "492acb89911dc27818bee41306fba3fc117339dc",
+      "sha256": "beffe0ac3bf9c9c0c8b68b4b0dd8700ff4183249a3462fa5cba05fb0b83162c2"
+    },
+    {
+      "path": "emulate/memory.py",
+      "git_blob_sha1": "8632bf05befba9d854c13895579dbb8edd99fb2a",
+      "sha256": "1358885dfdcff7b6690704049b0919d6c7e07609d218fffca94886cb1ab1ef58"
+    },
+    {
+      "path": "emulate/peripherals.py",
+      "git_blob_sha1": "827b4cf38c21b3b8723b01b929740544f9350fca",
+      "sha256": "be9f3b7a5fb0d1518c948c6cb49f5acb118dfe53e6255b007dd11f456b802aa6"
+    },
+    {
+      "path": "emulate/pyrite.py",
+      "git_blob_sha1": "7cccd3c6778a835e4485c494d8348dca2864e53b",
+      "sha256": "621a5946c24ad0907fac9da1d718876f94d7097e78f60731ac7f8ecb7b71e61e"
+    },
+    {
+      "path": "handmade/Makefile",
+      "git_blob_sha1": "813f62e835c592fc92622c3b5c38bc656c96f997",
+      "sha256": "202321d8d3a510ce11a5f52142b4cca1b1670a27252496632326798f77135d9c"
+    },
+    {
+      "path": "handmade/src/crt0.s",
+      "git_blob_sha1": "fc41e6949bc6a11bca8797da6880b2b8bdfa1f2c",
+      "sha256": "7271531c39a15288eeb6976b6e1c867ea69c9e299fe25acfb590a81caa0973d2"
+    },
+    {
+      "path": "test/test_firmware_lifecycle.py",
+      "git_blob_sha1": "8dd50985e11879fefd83d700d3d4ca6e96c5bbc2",
+      "sha256": "787e6f93565bca0d9a501422c3bc00a734b9b7cf13a530e3d0dea6d30d082c57"
+    },
+    {
+      "path": "test/test_pcie_nvme_lifecycle.py",
+      "git_blob_sha1": "69c9fbcbc3faf3492065488008fe92eb0ba6ef8f",
+      "sha256": "c2fd96267cb9bf80f68089357c0416c0230b610bdb2caa58f909ac5cb952c822"
+    },
+    {
+      "path": "tools/tcg_session.py",
+      "git_blob_sha1": "a8855d4292de70e98c665d52b445cb724ff6b204",
+      "sha256": "acf05cb00338c09047df299871e75cd8abe9688b7cfa2f9d558e033bdfc0b4e4"
+    }
+  ]
+}

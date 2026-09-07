@@ -1,0 +1,78 @@
+{
+  "revision": "rev-a-digital-twin-1",
+  "status": "PROVISIONAL: fit model and digital simulation, not fabrication-ready",
+  "reference_commit": "8b7a5b2e510b9e8b6a98e5ba4e491064da3b950c",
+  "flash": {
+    "part": "ZD25WQ16-style",
+    "capacity": 2097152,
+    "page_size": 256,
+    "sector_size": 4096,
+    "block_size": 65536,
+    "jedec_hex": "ba6015",
+    "program_ticks": 30,
+    "sector_erase_ticks": 300,
+    "block_erase_ticks": 1200,
+    "chip_erase_ticks": 2400,
+    "evidence": "ASSUMED generic 16-Mbit SPI NOR profile; exact ZD suffix, JEDEC and timing must be verified. Ticks are deterministic simulation units, not measured microseconds."
+  },
+  "boot": {
+    "flash_offset": 256,
+    "code_address": 0,
+    "evidence": "upstream emulate/emu.py load_firmware_from_spi offset=0x100; CPU8051.reset PC=0"
+  },
+  "recovery": {
+    "mechanism": "four_removable_shunts",
+    "links": [
+      "CS_N",
+      "CLK",
+      "MOSI",
+      "MISO"
+    ],
+    "requires_reset": true,
+    "reset_tristate_proven": false,
+    "programmer_connection": "flash_side",
+    "evidence": "PROPOSED explicit physical disconnection; all four shunts must be removed with reset held. Reset alone never grants ownership."
+  },
+  "geometry": {
+    "service_center_xy": [
+      -7.0,
+      -0.2
+    ],
+    "service_body_xyz": [
+      4.0,
+      7.0,
+      1.4
+    ],
+    "service_plug_xyz": [
+      4.8,
+      7.8,
+      8.0
+    ],
+    "isolation_center_xy": [
+      -7.0,
+      10.5
+    ],
+    "isolation_body_xyz": [
+      3.0,
+      10.5,
+      1.4
+    ],
+    "asm_body_xyz": [
+      10.0,
+      10.0,
+      1.2
+    ],
+    "thermal_insert_width": 13.0,
+    "evidence": "ASSUMED design envelopes, not selected manufacturer component models; shared by CAD and simulation.",
+    "flash_center_from_pcb_left_bottom": [
+      20.9301842,
+      20.2771502
+    ],
+    "flash_body_xyz": [
+      2.0,
+      3.0,
+      0.6
+    ],
+    "flash_evidence": "U31 BottomLayer, USON-8_L3.0-W2.0-P0.50-BL-EP, center 1394.313/1157.313 mil from Leaves232 PnP. XY orientation and 0.6-mm height are provisional."
+  }
+}

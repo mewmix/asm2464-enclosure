@@ -64,18 +64,19 @@ python mechanical/rev-a/model.py
 
 Generated STEP/STL files belong under `mechanical/rev-a/build/` and are intentionally ignored until geometry is mature enough to publish as release artifacts.
 
-## Simulation direction
+## Integrated CAD / simulation milestone
 
-The hardware-side pre-silicon target is a board-level digital twin around the existing ASM CPU/firmware emulator:
+The shared board configuration now drives service access, physical SPI-isolation shunts, flash envelope clearance, and the virtual board. The imported upstream CPU executes project-owned reference firmware through UART/SPI MMIO. The CPU regression proves boot, deliberate flash bricking, programmer erase/program/full readback, and recovered boot.
 
-- behavioral SPI NOR model;
-- UART model;
-- reset/power/isolation model;
-- external-programmer model;
-- fault injection for interrupted flash/erase, contention, brownout, and recovery;
-- optional LiteNVMe differential reference for downstream NVMe-host behavior.
+```bash
+python -m pip install -r simulation/requirements.txt
+# Install SDCC using your platform package manager, then:
+python scripts/validate_twin.py
+```
 
-See [`simulation/README.md`](simulation/README.md).
+See [validation outputs and limits](validation/README.md) and [the shared recovery design](hardware/rev-a/RECOVERY.md). STEP/STL and assembled/exploded PNGs are generated in `mechanical/rev-a/build/`. Geometry includes explicit provisional component envelopes, not a completed routed PCB.
+
+**RTL remains blocked:** no Verilog/RTL sources exist at the inspected authoritative branch tip. `--require-rtl` makes that missing gate fail explicitly. No full dual-backend or fabrication-ready claim is made.
 
 ## Design gates before fabrication
 

@@ -1,49 +1,9 @@
-# Board-Level Simulation Plan
+# Shared board simulation and imported ASM emulation
 
-This tree integrates pinned imports of the existing ASM2464PD CPU emulator and Verilog/RTL model with ONE common virtual Rev-A board. Follow [`../SIMULATION_WORK_INSTRUCTIONS.md`](../SIMULATION_WORK_INSTRUCTIONS.md), mandatory sections 13–25, for provenance, import tooling, reference firmware, flash semantics, differential traces, recovery, and the complete fault matrix.
+The working CPU/CAD milestone uses the **unchanged imported upstream CPU8051**, Memory, and HardwareState implementations at `acc935d351d49c66ab8d1026ee8cb4617609f782`. Generic SDCC-built mcs51 firmware runs from the upstream CODE-loading convention and drives actual UART/SPI MMIO. No CPU or controller RTL has been recreated.
 
-Both backends must ultimately pass reference-firmware boot and brick/recovery. Unsupported capabilities remain explicit blockers. The current instructions are requirements, not evidence that the backends have been imported or the regressions passed.
+`hardware/rev-a/board.json` couples the mechanical model to flash capacity/profile, boot offset and physical recovery-link states. The virtual programmer and CPU adapter use the same NOR instance. The model supports WEL/WIP, program/erase timing, NOR bit direction, status, ID, interruption and unsafe ownership detection. The firmware emits the expected boot banner; deliberate erasure prevents boot; external reprogramming and full readback restore it.
 
-## Scope
+Run `python scripts/validate_twin.py` after installing SDCC and `simulation/requirements.txt`. See [validation instructions](../validation/README.md) for outputs, exact modeling limits, and the stricter `--require-rtl` gate.
 
-Model what is open and controllable before Rev-A hardware:
-
-- external SPI NOR behavior;
-- UART transport;
-- reset/boot state;
-- external-programmer ownership of the flash bus;
-- flash backup/program/verify/recovery sequences;
-- power/reset fault injection at a behavioral level;
-- optional SPICE models for the actual reset/isolation/power circuitry;
-- required synthetic PCIe/NVMe downstream endpoint;
-- optional LiteNVMe differential reference.
-
-Do not claim analog USB4 PHY equivalence without vendor PHY models.
-
-## Required recovery regression
-
-The mandatory scenario is:
-
-```text
-known-good flash
-  -> ASM boot
-  -> UART boot evidence
-  -> corrupted flash
-  -> failed boot
-  -> safe SPI ownership
-  -> external read/erase/program/verify
-  -> release/reset
-  -> recovered ASM boot
-  -> UART confirmation
-```
-
-## Suggested open stack
-
-- Verilator / SystemVerilog
-- cocotb
-- behavioral SPI NOR model matched to the selected flash
-- Python virtual programmer
-- ngspice or Xyce for circuit-level reset/isolation checks
-- LiteNVMe / LitePCIe only as an independent downstream NVMe reference where useful
-
-Stock ASM traces remain the primary oracle for ASM-specific lifecycle behavior.
+The complete authoritative source tree contains no RTL files. Backend B and CPU/RTL differential comparison are **BLOCKED**, not skipped passes. The preserved two-backend requirements remain in [SIMULATION_WORK_INSTRUCTIONS.md](../SIMULATION_WORK_INSTRUCTIONS.md). Locate the existing RTL in the authoritative project before satisfying that gate.
