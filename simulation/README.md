@@ -1,6 +1,8 @@
 # Board-Level Simulation Plan
 
-This tree is for hardware-side simulation around the existing ASM2464PD CPU/firmware emulator.
+This tree integrates pinned imports of the existing ASM2464PD CPU emulator and Verilog/RTL model with ONE common virtual Rev-A board. Follow [`../SIMULATION_WORK_INSTRUCTIONS.md`](../SIMULATION_WORK_INSTRUCTIONS.md), mandatory sections 13–25, for provenance, import tooling, reference firmware, flash semantics, differential traces, recovery, and the complete fault matrix.
+
+Both backends must ultimately pass reference-firmware boot and brick/recovery. Unsupported capabilities remain explicit blockers. The current instructions are requirements, not evidence that the backends have been imported or the regressions passed.
 
 ## Scope
 
@@ -13,7 +15,8 @@ Model what is open and controllable before Rev-A hardware:
 - flash backup/program/verify/recovery sequences;
 - power/reset fault injection at a behavioral level;
 - optional SPICE models for the actual reset/isolation/power circuitry;
-- optional PCIe/NVMe behavioral endpoint and LiteNVMe differential reference.
+- required synthetic PCIe/NVMe downstream endpoint;
+- optional LiteNVMe differential reference.
 
 Do not claim analog USB4 PHY equivalence without vendor PHY models.
 
