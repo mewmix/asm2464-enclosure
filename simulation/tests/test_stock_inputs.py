@@ -8,6 +8,7 @@ import unittest
 from unittest.mock import patch
 from simulation.asm2464.adapter.stock import full_spi, execute_code
 from simulation.asm2464.adapter.cpu import CpuBackend
+from simulation.asm2464.upstream.emulate.memory import Memory
 from simulation.board.model import Board
 
 class StockInputTests(unittest.TestCase):
@@ -41,3 +42,17 @@ class StockInputTests(unittest.TestCase):
     def test_restricted_image_cannot_use_generic_boot_metadata(self):
         b=Board(flash_profile='stock_physical',restricted=True)
         with self.assertRaisesRegex(ValueError,'BOOT_BLOCKED'):CpuBackend(b)
+    def test_vendored_upstream_bank_extents_are_strict(self):
+        # TEST_ONLY_EMULATOR_CONTRACT: synthetic bytes pin coordinate/extents only.
+        mem=Memory();data=bytearray(98006)
+        data[0xFF6A]=0xA6;data[0xFF6B]=0xB1;data[-1]=0xEE
+        mem.load_firmware(data)
+        dpx=mem.SFR_DPX-0x80
+        mem.sfr[dpx]=0
+        self.assertEqual(mem.read_code(0xFF6A),0xA6)
+        self.assertEqual(mem.read_code(0xFF6B),0xFF)
+        mem.sfr[dpx]=1
+        self.assertEqual(mem.read_code(0x8000),0xB1)
+        self.assertEqual(mem.read_code(0xFF6A),0xEE)
+        self.assertEqual(mem.read_code(0xFF6B),0xFF)
+        self.assertEqual(mem.read_code(0xFFFF),0xFF)
