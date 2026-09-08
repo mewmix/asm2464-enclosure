@@ -5,10 +5,18 @@
 The primary realism target is stock/reconstructed ASM behavior. Generic reference
 firmware is secondary diagnostic isolation, not evidence of stock boot, USB,
 PCIe, NVMe, BOT or Pyrite. This priority supersedes the older first-milestone
-ordering below. Consume the reviewed exact lifecycle pin 84c990c91eb41948649ead0b28d6720c31c434c3,
+ordering below. Consume the reviewed exact lifecycle pin da87259d6bc0e2b86ff8bd0deb22938bd9fa89d7,
 with physical authority at 47aed2cd0fba21011b4f69ad34781e2c924b7f48.
 Never silently follow a moving ref. Keep the 512 KiB stock physical profile
 separate from the assumed 2 MiB Rev-A design candidate.
+
+The `da87259...` pin resolves the stock bank-coordinate dispute: body/file Bank 1
+starts at `0xFF6B`, the wrapped-package coordinate is `0xFF6F`, and the present
+Bank 1 artifact maps CPU `0x8000..0xFF6A`. Reads above that present extent are a
+fail-closed emulator policy, not physical boot-ROM evidence. Upstream also proves
+binary-internal Controller Identify reachability from bank target `0x89DB` to
+Identify at `0x8A07`; reset/boot reachability, Namespace Identify, boot-ROM
+behavior and physical-silicon execution remain separate open gates.
 
 Board owns external connections; CpuBackend owns HardwareState. Restricted full
 SPI images are local inputs only and never become repository artifacts. Stock
