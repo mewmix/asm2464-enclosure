@@ -1531,6 +1531,25 @@ class HardwareState:
     # Isolated legacy encoder fixtures may explicitly opt out of this model.
     pcie_routing_gate_enforced: bool = True
 
+    # Queue ancestry is EMULATOR_MODEL_ONLY, not proof of physical reset/DMA.
+    # The cold ASIC seed describes a mapping; it never grants queue ownership.
+    # Owners are (route, controller, Admin, Q1-or-None), with unbounded model
+    # counters so a host-side generation cannot alias a firmware byte counter.
+    pcie_route_generation: int = 0
+    nvme_controller_route_owner: Optional[int] = None
+    nvme_admin_generation: int = 0
+    nvme_q1_generation: int = 0
+    nvme_q0_owner: Optional[tuple] = None
+    nvme_q1_cq_owner: Optional[tuple] = None
+    nvme_q1_owner: Optional[tuple] = None
+    nvme_route_signature: Optional[tuple] = None
+    nvme_admin_register_writes: Dict[int, int] = field(default_factory=dict)
+    # Test-only delayed arrival. Reset leaves old events queued so delivery
+    # must reject their ancestry rather than silently deleting the evidence.
+    stock_nvme_defer_completions: bool = False
+    stock_nvme_pending_completions: list = field(default_factory=list)
+    stock_nvme_rejected_completions: list = field(default_factory=list)
+
     # Stock NVMe Queue Engine State & Fault Hooks (Queue 0 at 0xA000 / 0xB800)
     stock_nvme_queue_enabled: bool = False
     stock_nvme_setup_progress: int = 0
@@ -2156,7 +2175,7 @@ class HardwareState:
         self.regs[addr] = value
         self.stock_b254_trigger_log.append(value)
         if value in (0x01, 0x11):
-            if not self.stock_nvme_queue_enabled:
+            if self._stock_nvme_owner(0) is None:
                 self.regs[0xB296] = self.regs.get(0xB296, 0) | 0x01
             elif value == 0x01:
                 self._stock_nvme_sq_doorbell()
@@ -2165,7 +2184,7 @@ class HardwareState:
             return
 
         if value in (0x02, 0x12):
-            if not self.stock_nvme_queue_enabled:
+            if self._stock_nvme_owner(1) is None:
                 self.regs[0xB296] = self.regs.get(0xB296, 0) | 0x01
             elif value == 0x02:
                 self._stock_nvme_io_sq_doorbell()
@@ -2282,6 +2301,7 @@ class HardwareState:
                             self.pcie_bridge_raw_mem_limit = (val >> 16) & 0xFFFF
                             self.pcie_bridge_mem_base = (val & 0xFFF0) << 16
                             self.pcie_bridge_mem_limit = (((val >> 16) & 0xFFF0) << 16) | 0xFFFFF
+                        self._nvme_observe_route()
                     self.regs[0xB22A] = self.pcie_pio_cpl_status
                     self.regs[0xB22B] = self.pcie_pio_cpl_fmt
                     self.regs[0xB22C] = self.pcie_pio_cpl_dw0
@@ -2368,6 +2388,7 @@ class HardwareState:
                             self.pcie_endpoint_bars[reg_dw - 5] = val
                         elif reg_dw == (self.pcie_endpoint_capptr >> 2) + 2:
                             self.pcie_endpoint_devctl = val
+                        self._nvme_observe_route()
                     self.regs[0xB22A] = self.pcie_pio_cpl_status
                     self.regs[0xB22B] = self.pcie_pio_cpl_fmt
                     self.regs[0xB22C] = self.pcie_pio_cpl_dw0
@@ -2467,6 +2488,8 @@ class HardwareState:
 
     def reset_pcie_configuration(self):
         """Reset all PCIe bridge and endpoint configuration state to power-on defaults."""
+        self.pcie_route_generation += 1
+        self._nvme_revoke_controller()
         self.pcie_bridge_primary_bus = 0
         self.pcie_bridge_secondary_bus = 0
         self.pcie_bridge_subordinate_bus = 0
@@ -2494,6 +2517,7 @@ class HardwareState:
         self.pcie_endpoint_next_cap = 0x00
         self.pcie_endpoint_devctl = 0
         self.pcie_cfg_history.clear()
+        self.nvme_route_signature = self._nvme_route_signature()
 
     # ============================================
     # PCIe LTSSM Stage-Specific Model Callbacks
@@ -2733,7 +2757,7 @@ class HardwareState:
         else:  # downstream reset held / link unavailable
             self.pcie_acdf_history.clear()
             self.pcie_acdf_order_complete = False
-            if self.pcie_ltssm_state != 0x00:
+            if self.pcie_ltssm_state != 0x00 or self.pcie_bridge_configured:
                 self.trigger_pcie_link_loss()
 
     def _pcie_acdf_event(self, event: str):
@@ -2769,7 +2793,7 @@ class HardwareState:
                 self.pcie_link_recovery_required:
             self._pcie_link_recovery_event("rail_3v3_on")
         if not (value & 0x20):  # 3.3V power disabled
-            if self.pcie_ltssm_state != 0x00:
+            if self.pcie_ltssm_state != 0x00 or self.pcie_bridge_configured:
                 self.trigger_pcie_link_loss()
 
     def _pcie_power_companion_write(self, hw: 'HardwareState', addr: int,
@@ -2859,6 +2883,78 @@ class HardwareState:
             if self.pcie_ltssm_state != 0x00:
                 self.trigger_pcie_link_loss()
 
+    def _nvme_route_signature(self):
+        """Routing inputs which can revoke an already-established generation."""
+        return (self.pcie_bridge_configured, self.pcie_bridge_primary_bus,
+                self.pcie_bridge_secondary_bus, self.pcie_bridge_subordinate_bus,
+                self.pcie_bridge_command & 6, self.pcie_bridge_mem_base,
+                self.pcie_bridge_mem_limit, self.pcie_endpoint_present,
+                self.pcie_endpoint_devfn, self.pcie_endpoint_command & 6,
+                self.pcie_endpoint_bar0, self.pcie_endpoint_bar0_size,
+                self.pcie_endpoint_bar0_probed)
+
+    def _nvme_observe_route(self):
+        signature = self._nvme_route_signature()
+        if self.nvme_route_signature != signature:
+            self.pcie_route_generation += 1
+            self._nvme_revoke_controller()
+            self.nvme_route_signature = signature
+
+    def _nvme_route_valid(self):
+        # Queue DMA never honors the legacy PIO encoder's routing opt-out.
+        # Both MSE and BME are necessary for this modeled bidirectional path.
+        bar_mask = (~(self.pcie_endpoint_bar0_size - 1)) & 0xFFFFFFFF
+        return bool(
+            self.pcie_bridge_configured and self.pcie_endpoint_present and
+            self.pcie_bridge_secondary_bus != 0 and
+            self.pcie_bridge_subordinate_bus >= self.pcie_bridge_secondary_bus and
+            self.pcie_bridge_command & 6 == 6 and
+            self.pcie_endpoint_command & 6 == 6 and
+            self.pcie_bridge_mem_base <= self.nvme_bar0 and
+            self.nvme_bar0 + 0x1FFF <= self.pcie_bridge_mem_limit and
+            self.pcie_endpoint_bar0 and not self.pcie_endpoint_bar0_probed and
+            self.nvme_bar0 & bar_mask == self.pcie_endpoint_bar0 & bar_mask)
+
+    def _nvme_revoke_q1(self):
+        self.nvme_q1_owner = None
+        self.nvme_q1_cq_owner = None
+        self.nvme_io_cq_created = False
+        self.nvme_io_sq_created = False
+        self.nvme_io_data_length = 0
+
+    def _nvme_revoke_controller(self):
+        self.nvme_controller_generation += 1
+        self.nvme_controller_route_owner = None
+        self.nvme_q0_owner = None
+        self.nvme_admin_register_writes.clear()
+        self._nvme_revoke_q1()
+
+    def _stock_nvme_mapping_valid(self):
+        # Dynamic W1C latches and the moving doorbell index are not seed state.
+        return bool(self.stock_nvme_queue_enabled and all(
+            self.regs.get(addr) == value for addr, value in (
+                (0xB264, 8), (0xB265, 0), (0xB266, 8), (0xB267, 8),
+                (0xB26C, 8), (0xB26D, 0x20), (0xB26E, 8), (0xB26F, 0x28))))
+
+    def _stock_nvme_owner(self, qid):
+        self._nvme_observe_route()
+        if not (self._nvme_route_valid() and self._stock_nvme_mapping_valid() and
+                self.nvme_cc & 1 and self.nvme_csts & 1 and
+                not self.nvme_csts & 2 and
+                self.nvme_controller_route_owner == self.pcie_route_generation):
+            return None
+        q0 = (self.pcie_route_generation, self.nvme_controller_generation,
+              self.nvme_admin_generation, None)
+        if self.nvme_q0_owner != q0:
+            return None
+        if qid == 0:
+            return q0
+        q1 = q0[:3] + (self.nvme_q1_generation,)
+        if (self.nvme_q1_owner == self.nvme_q1_cq_owner == q1 and
+                self.nvme_io_cq_created and self.nvme_io_sq_created):
+            return q1
+        return None
+
     def _nvme_mmio_read32(self, address: int) -> int:
         if not self.nvme_bar0 <= address < self.nvme_bar0 + 0x2000:
             return 0
@@ -2874,8 +2970,11 @@ class HardwareState:
             return
         offset = address - self.nvme_bar0
         if offset == 0x14:
+            self._nvme_observe_route()
             if (self.nvme_cc ^ value) & 1:
                 self.nvme_controller_generation += 1
+                self.nvme_q0_owner = None
+                self._nvme_revoke_q1()
                 self.nvme_cq_tail = 0
                 self.nvme_cq_phase = 1
                 self.nvme_io_cq_tail = 0
@@ -2892,10 +2991,35 @@ class HardwareState:
                 self.stock_nvme_io_cq_phase = 1
             self.nvme_cc = value
             self.nvme_csts = (self.nvme_csts | 1) if value & 1 else (self.nvme_csts & ~1)
-        elif offset == 0x28:
-            self.nvme_asq = value
-        elif offset == 0x30:
-            self.nvme_acq = value
+            if not value & 1:
+                self.nvme_controller_route_owner = None
+                self.nvme_q0_owner = None
+                self._nvme_revoke_q1()
+                self.nvme_admin_register_writes.clear()
+            elif self.nvme_q0_owner is None:
+                # Values/writes come from the inherited handmade Q0 sequence.
+                # No completed mapping sequence may manufacture these writes.
+                required = {0x24: 0x30003, 0x28: 0x200000, 0x2C: 0,
+                            0x30: 0x820000, 0x34: 0}
+                if self._nvme_route_valid() and self.nvme_admin_register_writes == required:
+                    self.nvme_controller_route_owner = self.pcie_route_generation
+                    self.nvme_admin_generation += 1
+                    self.nvme_q0_owner = (self.pcie_route_generation,
+                                          self.nvme_controller_generation,
+                                          self.nvme_admin_generation, None)
+                else:
+                    self.nvme_csts &= ~1
+        elif offset in (0x24, 0x28, 0x2C, 0x30, 0x34):
+            if not self.nvme_cc & 1:
+                self.nvme_admin_register_writes[offset] = value
+            else:
+                # Reprogramming a live Admin queue is not a queue reset barrier.
+                self.nvme_q0_owner = None
+                self._nvme_revoke_q1()
+            if offset == 0x28:
+                self.nvme_asq = value
+            elif offset == 0x30:
+                self.nvme_acq = value
         elif offset == 0x1000:
             self._nvme_admin_doorbell(value)
         elif offset == 0x1008:
@@ -2925,11 +3049,17 @@ class HardwareState:
 
     def _stock_nvme_setup_write(self, hw: 'HardwareState', addr: int, value: int):
         """Record ordinary register writes participating in the stock setup seed."""
+        if (addr in (0xB264, 0xB265, 0xB266, 0xB267,
+                     0xB26C, 0xB26D, 0xB26E, 0xB26F) and
+                self.stock_nvme_queue_enabled and self.regs.get(addr) != value):
+            self.stock_nvme_queue_enabled = False
+            self.nvme_q0_owner = None
+            self._nvme_revoke_q1()
         self.regs[addr] = value
         self._stock_nvme_setup_observe(addr, value)
 
     def _stock_nvme_setup_observe(self, addr: int, value: int):
-        """Enable the queue model only after the exact setup writes occur in order."""
+        """Recognize the cold ASIC mapping seed; this grants no queue lifetime."""
         expected = (
             (0xB264, 0x08), (0xB265, 0x00), (0xB266, 0x08), (0xB267, 0x08),
             (0xB26C, 0x08), (0xB26D, 0x20), (0xB26E, 0x08), (0xB26F, 0x28),
@@ -2949,7 +3079,9 @@ class HardwareState:
 
     def _stock_nvme_sq_doorbell(self):
         """Model stock ASIC NVMe Queue 0 submission via B254=0x01."""
-        if not self.memory:
+        owner = self._stock_nvme_owner(0)
+        if not self.memory or owner is None:
+            self.regs[0xB296] = self.regs.get(0xB296, 0) | 1
             return
         tail = self.regs.get(0xB251, 0) & 0x03
         self.stock_nvme_sq_tail = tail
@@ -2978,6 +3110,7 @@ class HardwareState:
             "cdw10": cdw10,
             "cdw11": cdw11,
             "sq_tail": tail,
+            "owner": owner,
         }
         self.stock_nvme_submission_history.append(record)
         self.nvme_admin_history.append({
@@ -2988,14 +3121,17 @@ class HardwareState:
         })
 
         sct, sc = 0, 0
-        if opcode == 0x06 and cdw10 == 1:
+        if self.stock_nvme_force_sct or self.stock_nvme_force_sc:
+            # An injected rejected command must not allocate queues or DMA.
+            sct, sc = self.stock_nvme_force_sct, self.stock_nvme_force_sc
+        elif opcode == 0x06 and cdw10 == 1:
             # Identify Controller
             data = bytearray(512)
             data[4:24] = self.nvme_identify_serial
             data[24:64] = b"SAMSUNG MZALQ512HBLU-00BL2".ljust(40, b" ")
             data[64:72] = b"7L2QFXM7"
             data[256:258] = (0x0017).to_bytes(2, "little")
-            if not self._stock_nvme_dma_write(prp1, data):
+            if not self._stock_nvme_dma_write(prp1, data, owner):
                 sct, sc = 0, 0x02
         elif opcode == 0x06 and cdw10 == 0 and nsid == 1:
             # Identify Namespace
@@ -3012,11 +3148,12 @@ class HardwareState:
                 data[128:130] = (0).to_bytes(2, "little")
                 data[130] = self.nvme_namespace_lba_shift
                 data[131] = 0
-                if not self._stock_nvme_dma_write(prp1, data):
+                if not self._stock_nvme_dma_write(prp1, data, owner):
                     sct, sc = 0, 0x02
         elif opcode == 0x05:
             # Create I/O CQ
-            if self.nvme_io_cq_created:
+            if (self.nvme_io_cq_created or prp1 != 0x820200 or
+                    cdw10 != 0x30001 or cdw11 != 1):
                 sc = 0x02
             else:
                 self.nvme_io_cq_tail = 0
@@ -3026,13 +3163,32 @@ class HardwareState:
                 self.stock_nvme_io_cq_phase = 1
                 self.regs[0xB294] = 0
                 self.nvme_io_cq_created = True
+                self.nvme_q1_generation += 1
+                self.nvme_q1_cq_owner = owner[:3] + (self.nvme_q1_generation,)
         elif opcode == 0x01:
             # Create I/O SQ
-            if self.nvme_io_sq_created:
+            if (self.nvme_io_sq_created or not self.nvme_io_cq_created or
+                    self.nvme_q1_cq_owner != owner[:3] + (self.nvme_q1_generation,) or
+                    prp1 != 0x200200 or cdw10 != 0x30001 or cdw11 != 0x10001):
                 sc = 0x02
             else:
                 self.stock_nvme_io_sq_tail = 0
                 self.nvme_io_sq_created = True
+                # SQ-only deletion/recreation must also break old Q1 ancestry.
+                self.nvme_q1_generation += 1
+                self.nvme_q1_cq_owner = owner[:3] + (self.nvme_q1_generation,)
+                self.nvme_q1_owner = self.nvme_q1_cq_owner
+        elif opcode == 0x00:  # Delete I/O SQ; modeled protocol, not stock proof
+            if cdw10 != 1 or not self.nvme_io_sq_created:
+                sc = 0x02
+            else:
+                self.nvme_io_sq_created = False
+                self.nvme_q1_owner = None
+        elif opcode == 0x04:  # Delete I/O CQ only after SQ deletion
+            if cdw10 != 1 or self.nvme_io_sq_created or not self.nvme_io_cq_created:
+                sc = 0x02
+            else:
+                self._nvme_revoke_q1()
         elif opcode == 0x82 and (cdw10 >> 24) == 1:
             # Security Receive
             comid = (cdw10 >> 8) & 0xFFFF
@@ -3046,12 +3202,12 @@ class HardwareState:
                 data = bytearray(512)
                 data[:4] = (44 + len(features)).to_bytes(4, "big")
                 data[48:48 + len(features)] = features
-                if not self._stock_nvme_dma_write(prp1, data):
+                if not self._stock_nvme_dma_write(prp1, data, owner):
                     sct, sc = 0, 0x02
             elif comid == self.pyrite_device.comid:
                 try:
                     response = self.pyrite_device.receive(comid, min(cdw11, 512))
-                    if not self._stock_nvme_dma_write(prp1, response):
+                    if not self._stock_nvme_dma_write(prp1, response, owner):
                         sct, sc = 0, 0x02
                 except ValueError:
                     sct, sc = 0, 0x01
@@ -3085,17 +3241,43 @@ class HardwareState:
         if self.stock_nvme_force_sc:
             sc = self.stock_nvme_force_sc
 
-        # Build 16-byte CQE at 0xB800 + 16 * stock_nvme_cq_tail
-        cqe_addr = 0xB800 + self.stock_nvme_cq_tail * 16
+        self._stock_nvme_complete(0, owner, eff_cid, eff_phase, sct, sc)
+
+    def _stock_nvme_complete(self, qid, owner, cid, phase, sct, sc):
+        event = (qid, owner, cid, phase, sct, sc)
+        if self.stock_nvme_defer_completions:
+            self.stock_nvme_pending_completions.append(event)
+        else:
+            self._stock_nvme_publish_completion(event)
+
+    def complete_deferred_nvme(self):
+        """Test-only delivery of old events through the ordinary ancestry gate."""
+        events, self.stock_nvme_pending_completions = self.stock_nvme_pending_completions, []
+        for event in events:
+            self._stock_nvme_publish_completion(event)
+
+    def _stock_nvme_publish_completion(self, event):
+        qid, owner, cid, phase, sct, sc = event
+        if owner is None or owner != self._stock_nvme_owner(qid):
+            self.stock_nvme_rejected_completions.append(event)
+            return
+        tail = self.stock_nvme_io_cq_tail if qid else self.stock_nvme_cq_tail
+        cqe_addr = (0xB840 if qid else 0xB800) + tail * 16
         cqe = bytearray(16)
-        cqe[12:14] = eff_cid.to_bytes(2, "little")
-        status_word = (eff_phase & 0x01) | ((sc & 0xFF) << 1) | ((sct & 0x07) << 9)
+        cqe[12:14] = cid.to_bytes(2, "little")
+        status_word = (phase & 0x01) | ((sc & 0xFF) << 1) | ((sct & 0x07) << 9)
         cqe[14:16] = status_word.to_bytes(2, "little")
         for i, b in enumerate(cqe):
             self.regs[cqe_addr + i] = b
             self.memory.xdata[cqe_addr + i] = b
 
-        # Advance internal CQ tail and toggle phase on wrap
+        if qid:
+            self.stock_nvme_io_cq_tail = (self.stock_nvme_io_cq_tail + 1) % 4
+            if self.stock_nvme_io_cq_tail == 0:
+                self.stock_nvme_io_cq_phase ^= 1
+            self.regs[0xB294] = self.regs.get(0xB294, 0) | 0x10
+            return
+
         self.stock_nvme_cq_tail = (self.stock_nvme_cq_tail + 1) % 4
         if self.stock_nvme_cq_tail == 0:
             self.stock_nvme_cq_phase ^= 1
@@ -3104,8 +3286,10 @@ class HardwareState:
         self.regs[0xCEF2] = self.regs.get(0xCEF2, 0) | 0x80
         self.regs[0xC806] = self.regs.get(0xC806, 0) | 0x20
 
-    def _stock_nvme_dma_write(self, prp1: int, data: bytes) -> bool:
+    def _stock_nvme_dma_write(self, prp1: int, data: bytes, owner: tuple) -> bool:
         """Model only the two firmware-observed PRP/XDATA associations."""
+        if owner is None or owner != self._stock_nvme_owner(0):
+            return False
         if prp1 == 0x00200000:
             base = 0xF000
         elif prp1 == 0x00820400:
@@ -3117,6 +3301,9 @@ class HardwareState:
 
     def _stock_nvme_cq_doorbell(self):
         """Model stock ASIC NVMe Queue 0 CQ head update via B254=0x11."""
+        if self._stock_nvme_owner(0) is None:
+            self.regs[0xB296] = self.regs.get(0xB296, 0) | 1
+            return
         head = self.regs.get(0xB251, 0) & 0x03
         self.stock_nvme_cq_head = head
         self.stock_nvme_head_history.append(head)
@@ -3130,7 +3317,9 @@ class HardwareState:
 
     def _stock_nvme_io_sq_doorbell(self):
         """Model stock ASIC NVMe Queue 1 submission via B254=0x02."""
-        if not self.memory:
+        owner = self._stock_nvme_owner(1)
+        if not self.memory or owner is None:
+            self.regs[0xB296] = self.regs.get(0xB296, 0) | 1
             return
         tail = self.regs.get(0xB251, 0) & 0x03
         self.stock_nvme_io_sq_tail = tail
@@ -3159,6 +3348,7 @@ class HardwareState:
             "lba": lba,
             "nlb": nlb,
             "sq_tail": tail,
+            "owner": owner,
         }
         self.stock_nvme_io_submission_history.append(record)
         self.nvme_io_history.append({
@@ -3230,26 +3420,13 @@ class HardwareState:
         sct = self.stock_nvme_io_force_sct
         sc = self.stock_nvme_io_force_sc if self.stock_nvme_io_force_sc else status
 
-        # Build 16-byte CQE at 0xB840 + 16 * stock_nvme_io_cq_tail
-        cqe_addr = 0xB840 + self.stock_nvme_io_cq_tail * 16
-        cqe = bytearray(16)
-        cqe[12:14] = eff_cid.to_bytes(2, "little")
-        status_word = (eff_phase & 0x01) | ((sc & 0xFF) << 1) | ((sct & 0x07) << 9)
-        cqe[14:16] = status_word.to_bytes(2, "little")
-        for i, b in enumerate(cqe):
-            self.regs[cqe_addr + i] = b
-            self.memory.xdata[cqe_addr + i] = b
-
-        # Advance internal CQ tail and toggle phase on wrap
-        self.stock_nvme_io_cq_tail = (self.stock_nvme_io_cq_tail + 1) % 4
-        if self.stock_nvme_io_cq_tail == 0:
-            self.stock_nvme_io_cq_phase ^= 1
-
-        # Assert B294 bit 4 (Queue 1 completion)
-        self.regs[0xB294] = self.regs.get(0xB294, 0) | 0x10
+        self._stock_nvme_complete(1, owner, eff_cid, eff_phase, sct, sc)
 
     def _stock_nvme_io_cq_doorbell(self):
         """Model stock ASIC NVMe Queue 1 CQ head update via B254=0x12."""
+        if self._stock_nvme_owner(1) is None:
+            self.regs[0xB296] = self.regs.get(0xB296, 0) | 1
+            return
         head = self.regs.get(0xB251, 0) & 0x03
         self.stock_nvme_io_cq_head = head
         self.stock_nvme_io_head_history.append(head)
@@ -6322,6 +6499,10 @@ class HardwareState:
             print(f"[{self.cycles:8d}] [HW] Write 0x{addr:04X} = 0x{value:02X}")
 
         old = self.regs.get(addr, 0x00)
+        if addr == 0xB401 and value & 1:
+            # Conservative model reset boundary. This does not prove which
+            # additional stock teardown helpers are necessary on silicon.
+            self.reset_pcie_configuration()
         self._record_usb_stock_cold(0, addr, old, value)
         self._record_usb_stock_c24c(0, addr, old, value)
         self._record_usb_stock_3a2b_channel(addr, old, value)
@@ -6704,3 +6885,4 @@ def create_hardware_hooks(memory: 'Memory', hw: HardwareState, proxy: 'UARTProxy
                 return 0x02
             return memory.xdata[addr]
         memory.xdata_read_hooks[0x0ACC] = usb3_mode_read_hook
+

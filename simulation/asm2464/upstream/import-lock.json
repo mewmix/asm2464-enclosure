@@ -1,7 +1,7 @@
 {
   "repository": "mewmix/asm2464pd-opal",
   "branch": "agent/full-firmware-lifecycle",
-  "commit": "acc935d351d49c66ab8d1026ee8cb4617609f782",
+  "commit": "84c990c91eb41948649ead0b28d6720c31c434c3",
   "files": [
     {
       "path": "emulate/README.md",
@@ -30,8 +30,8 @@
     },
     {
       "path": "emulate/hardware.py",
-      "git_blob_sha1": "492acb89911dc27818bee41306fba3fc117339dc",
-      "sha256": "beffe0ac3bf9c9c0c8b68b4b0dd8700ff4183249a3462fa5cba05fb0b83162c2"
+      "git_blob_sha1": "aa6b764352a6942fdec5a05dec53661ceb6045e1",
+      "sha256": "afb6a3b7b04568fb330822aa58954d58f226b900f62507b1933670ad4d451739"
     },
     {
       "path": "emulate/memory.py",
@@ -72,6 +72,32 @@
       "path": "tools/tcg_session.py",
       "git_blob_sha1": "a8855d4292de70e98c665d52b445cb724ff6b204",
       "sha256": "acf05cb00338c09047df299871e75cd8abe9688b7cfa2f9d558e033bdfc0b4e4"
+    }
+  ],
+  "previous_source_commit": "acc935d351d49c66ab8d1026ee8cb4617609f782",
+  "physical_baseline_commit": "47aed2cd0fba21011b4f69ad34781e2c924b7f48",
+  "local_patches": [],
+  "omitted_files": [
+    "production images and restricted evidence",
+    "live transport/install tools",
+    "unrelated firmware/build artifacts",
+    "test harness dependencies outside this allowlist"
+  ],
+  "licensing_note": "Same-owner user-directed import; no source root license found; no redistribution grant inferred.",
+  "reviewed_delta": [
+    {
+      "path": "emulate/hardware.py",
+      "before": {
+        "path": "emulate/hardware.py",
+        "git_blob_sha1": "492acb89911dc27818bee41306fba3fc117339dc",
+        "sha256": "beffe0ac3bf9c9c0c8b68b4b0dd8700ff4183249a3462fa5cba05fb0b83162c2"
+      },
+      "after": {
+        "path": "emulate/hardware.py",
+        "git_blob_sha1": "aa6b764352a6942fdec5a05dec53661ceb6045e1",
+        "sha256": "afb6a3b7b04568fb330822aa58954d58f226b900f62507b1933670ad4d451739"
+      },
+      "reason": "Gate DMA and CQE publication on current routing/controller/Admin/Q1 ancestry; revoke descendants on configuration reset; reject stale deferred completions. EMULATOR_MODEL_ONLY, not physical link generation proof."
     }
   ]
 }
