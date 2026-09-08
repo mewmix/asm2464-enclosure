@@ -1,7 +1,7 @@
 {
   "repository": "mewmix/asm2464pd-opal",
   "branch": "agent/full-firmware-lifecycle",
-  "commit": "84c990c91eb41948649ead0b28d6720c31c434c3",
+  "commit": "da87259d6bc0e2b86ff8bd0deb22938bd9fa89d7",
   "files": [
     {
       "path": "emulate/README.md",
@@ -35,8 +35,8 @@
     },
     {
       "path": "emulate/memory.py",
-      "git_blob_sha1": "8632bf05befba9d854c13895579dbb8edd99fb2a",
-      "sha256": "1358885dfdcff7b6690704049b0919d6c7e07609d218fffca94886cb1ab1ef58"
+      "git_blob_sha1": "c84c028a71eb33afc7185b76ae97e830c465c680",
+      "sha256": "d9f7a5157ec857b16eae1a3ee2d75f611293ac9b28cf5eb6eefd7b1b5cba3282"
     },
     {
       "path": "emulate/peripherals.py",
@@ -79,40 +79,31 @@
       "sha256": "960a8b8ae95040335bb5240f0ed042dc5d527df0a35f5b8c572f22cf6cc54b3d"
     }
   ],
-  "previous_source_commit": "acc935d351d49c66ab8d1026ee8cb4617609f782",
+  "previous_source_commit": "84c990c91eb41948649ead0b28d6720c31c434c3",
   "physical_baseline_commit": "47aed2cd0fba21011b4f69ad34781e2c924b7f48",
   "local_patches": [],
   "omitted_files": [
     "production images and restricted evidence",
     "live transport/install tools",
     "unrelated firmware/build artifacts",
-    "test harness dependencies outside this allowlist"
+    "test harness dependencies outside this allowlist",
+    "upstream bank-mapping audit/docs/tests not required by the enclosure runtime snapshot"
   ],
   "licensing_note": "Same-owner user-directed import; no source root license found; no redistribution grant inferred.",
   "reviewed_delta": [
     {
-      "path": "emulate/hardware.py",
+      "path": "emulate/memory.py",
       "before": {
-        "path": "emulate/hardware.py",
-        "git_blob_sha1": "492acb89911dc27818bee41306fba3fc117339dc",
-        "sha256": "beffe0ac3bf9c9c0c8b68b4b0dd8700ff4183249a3462fa5cba05fb0b83162c2"
+        "path": "emulate/memory.py",
+        "git_blob_sha1": "8632bf05befba9d854c13895579dbb8edd99fb2a",
+        "sha256": "1358885dfdcff7b6690704049b0919d6c7e07609d218fffca94886cb1ab1ef58"
       },
       "after": {
-        "path": "emulate/hardware.py",
-        "git_blob_sha1": "aa6b764352a6942fdec5a05dec53661ceb6045e1",
-        "sha256": "afb6a3b7b04568fb330822aa58954d58f226b900f62507b1933670ad4d451739"
+        "path": "emulate/memory.py",
+        "git_blob_sha1": "c84c028a71eb33afc7185b76ae97e830c465c680",
+        "sha256": "d9f7a5157ec857b16eae1a3ee2d75f611293ac9b28cf5eb6eefd7b1b5cba3282"
       },
-      "reason": "Gate DMA and CQE publication on current routing/controller/Admin/Q1 ancestry; revoke descendants on configuration reset; reject stale deferred completions. EMULATOR_MODEL_ONLY, not physical link generation proof."
-    },
-    {
-      "path": "test/test_nvme_queue_causality.py",
-      "before": null,
-      "after": {
-        "path": "test/test_nvme_queue_causality.py",
-        "git_blob_sha1": "704745b97e384a6a9b7753f61c8dac63708b29cf",
-        "sha256": "960a8b8ae95040335bb5240f0ed042dc5d527df0a35f5b8c572f22cf6cc54b3d"
-      },
-      "reason": "Import exact 19 stdlib model contracts with original generic route fixture for upstream regression only; enclosure stock tests use separate canonical stock fixture. EMULATOR_MODEL_ONLY."
+      "reason": "Consume the merged stock bank-coordinate correction: body/file Bank 1 base remains 0xFF6B, present Bank 0/1 code extents end at CPU 0xFF6A, and reads in the absent upper tail fail closed to 0xFF as emulator policy. This does not establish boot-ROM, reset-to-bank-switch, or physical-silicon execution."
     }
   ]
 }
