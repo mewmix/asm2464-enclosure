@@ -3,7 +3,7 @@
 The physical authority remains `mewmix/asm2464pd-opal` branch
 `agent/usb-storage-bringup` at `47aed2cd0fba21011b4f69ad34781e2c924b7f48`.
 The imported lifecycle model is pinned to
-`84c990c91eb41948649ead0b28d6720c31c434c3`. Neither source branch was changed.
+`da87259d6bc0e2b86ff8bd0deb22938bd9fa89d7`. Neither authoritative source branch was changed by this enclosure repin.
 All work here is offline; hardware_touched=false.
 
 ## Inheritance decisions
@@ -16,7 +16,7 @@ All work here is offline; hardware_touched=false.
 | Queue ancestry | Newer upstream lifecycle implementation, EMULATOR_MODEL_ONLY | Exact unpatched import; same-instance routing/controller/Admin/Q1 tests |
 | External link loss | New board-level model contract, EMULATOR_MODEL_ONLY / CONSERVATIVE_SAFETY_POLICY | Immediate loss notification revokes upstream routing before deferred delivery; link return cannot restore owners |
 | Programmer ownership | Existing enclosure design assumption | Four open physical shunts, held reset; reset alone still does not imply tri-state |
-| Firmware boot/banking | Contradiction requiring upstream investigation | Bounded bank-zero stock execution; no enclosure bank-address workaround |
+| Firmware boot/banking | Bank coordinates/extent resolved upstream; complete startup still unresolved | Exact upstream memory model; no enclosure offset workaround; no boot-ROM claim |
 
 The pre-BAR audit's physical verdict is still
 `STOCK_PRE_BAR_CONFIGURATION_PATH_MISSING_FROM_HANDMADE; PHYSICAL_UR_CAUSE_NOT_YET_ISOLATED_TO_ONE_REGISTER`.
@@ -37,6 +37,8 @@ No generic route values are substituted in enclosure stock causal tests.
 | Installer layout | Preserves first 0x100 configuration bytes; padded E3 regions 0xFF00 + 0x7FE0; final 32-byte guard retained | Historical path described by tools/install_usb4_demo_from_generic.py; applies to exact recorded acquisitions/candidates |
 | Reset vector | Exact fw.bin LJMP at 0 to 0x436B | INSTRUCTION_PROVEN; one CPU instruction executed, not complete cold startup |
 | Seed helper | Bank-zero 0xCF91..0xCFE3 (end excludes RET); 51 instructions, 16 ordered writes | INSTRUCTION_PROVEN bytes and EMULATOR_MODEL_ONLY execution; tested with initial zero companion bits |
+| Bank mapping | Body/file Bank 1 base 0xFF6B; wrapped offset 0xFF6F; present Bank 1 maps CPU 0x8000..0xFF6A | STOCK_BYTES/INSTRUCTION_PROVEN upstream; absent CPU 0xFF6B..0xFFFF returns 0xFF only as EMULATOR_MODEL_ONLY fail-closed policy |
+| Controller Identify path | Pinned bank-switch target 0x89DB / body 0x10946 falls through 25 instruction-aligned instructions to Controller Identify 0x8A07 / body 0x10972 | STOCK_INSTRUCTION_AND_DATAFLOW_PROVEN upstream; reset/boot reachability and physical execution remain unproven |
 | SPI-to-CODE loading | Upstream emu.py accepts caller length and default offset 0x100 | EMULATOR_MODEL_ONLY caller convention, not boot-ROM proof |
 | Generic image | Project manifest owns offset 0x100 and 501-byte code length | GENERIC_REFERENCE_FIRMWARE; diagnostic replay only |
 | Handmade storage image | Separate usb4-demo firmware/package | HANDMADE_STORAGE_CANDIDATE; not built, packaged or executed here |
@@ -52,14 +54,14 @@ only a model compatibility experiment, not controller support evidence.
 
 ## Upstream defects and remaining limits
 
-1. **Bank-coordinate inconsistency:** pinned emulate/memory.py uses
-   BANK1_FILE_BASE=0xFF6B while emu.py strips the wrapper. The newer
-   tools/audit_stock_nvme_admin_init.py explicitly distinguishes body 0xFF67
-   from raw 0xFF6B; tools/audit_stock_nvme_bank_reachability.py uses the same
-   distinction. Some older USB audit comments also use 0xFF6B for fw.bin.
-   Resolve these coordinate conventions upstream before full banked execution.
-   Enclosure neither patches the memory model nor claims banked startup.
-2. **Namespace/security ownership:** 84c990c models queue ancestry, not the
+1. **Bank mapping resolved; startup reachability remains open:** lifecycle
+   `da87259...` establishes body/file Bank 1 base `0xFF6B`, wrapped offset
+   `0xFF6F`, rejects the stale `0xFF67` interpretation, and bounds the present
+   bank image through CPU `0xFF6A`. It also establishes binary-internal
+   Controller Identify reachability from the pinned bank switch. It does not
+   establish reset/boot reaching that callsite, Namespace Identify reachability,
+   boot-ROM loading/banking behavior, or physical-silicon execution.
+2. **Namespace/security ownership:** `da87259...` models queue ancestry, not the
    complete firmware namespace/Pyrite ownership hierarchy. No board-owned
    namespace or authorization flags are fabricated. BOT media readiness and
    stock Pyrite storage boot remain unsupported. No physical drive relocking
@@ -70,10 +72,10 @@ only a model compatibility experiment, not controller support evidence.
    endpoint interface for a future real RTL backend requires upstream work.
 4. **RTL:** no implementation was found in the authoritative source tree;
    CPU/RTL differential validation is BLOCKED, never a passing stub.
-5. **Toolchain:** SDCC and CadQuery are unavailable in this runtime. The exact
-   committed diagnostic bundle is verified/replayed; no fresh build or CAD
-   regeneration is claimed. Geometry and recovery topology are checked against
-   the original profile before replay. Existing renders remain historical.
+5. **Toolchain:** SDCC and CadQuery are unavailable in the original agent runtime.
+   The exact committed diagnostic bundle can be verified/replayed without
+   treating that as a fresh build or CAD regeneration. Existing renders remain
+   historical unless those toolchain gates are rerun in an environment that has them.
 
 ## Data policy
 
