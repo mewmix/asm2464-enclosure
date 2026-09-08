@@ -124,7 +124,7 @@ class Memory:
         self.idata[addr] = value
 
     # Known DMA/timer sync flag addresses that need auto-clear when polled
-    # These are RAM flags that firmware sets and waits for hardware to clear
+    # These flags are set by firmware and should be cleared by DMA/timer completion
     SYNC_FLAG_ADDRS = {0x1238}  # Timer/DMA sync flag at 0x1238
     SYNC_FLAG_CLEAR_AFTER = 5   # Clear after this many polls
 
@@ -223,7 +223,7 @@ class Memory:
         Bit addresses 0x80-0xFF: SFR bit-addressable registers
         """
         if bit_addr < 0x80:
-            # IDATA bit-addressable area
+            # IDATA bit-addressable area (0x20-0x2F)
             byte_addr = 0x20 + (bit_addr >> 3)
             bit_pos = bit_addr & 0x07
             return bool(self.idata[byte_addr] & (1 << bit_pos))
