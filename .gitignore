@@ -4,3 +4,7 @@ __pycache__/
 .DS_Store
 mechanical/**/build/
 *.FCStd1
+simulation/asm2464/firmware/reference/build/
+simulation/traces/*.jsonl
+core
+simulation/traces/summary.json

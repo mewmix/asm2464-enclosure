@@ -3,6 +3,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 import json
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from simulation.board.config import load as board_config, sha256 as board_hash
 
 import cadquery as cq
 from cadquery import exporters
@@ -49,7 +52,7 @@ class Design:
     usb_open_bottom_z: float = 1.45
 
     # Thermal interface region over ASM2464PD.
-    thermal_insert_w: float = 16.0
+    thermal_insert_w: float = board_config()['geometry']['thermal_insert_width']
     thermal_insert_l: float = 18.0
     thermal_insert_t: float = 0.80
     thermal_pocket_clearance: float = 0.20
@@ -117,19 +120,26 @@ def make_base(d: Design) -> cq.Workplane:
     )
     base = base.cut(usb_cut)
 
-    rail_w = 1.20
-    rail_h = 0.65
-    rail_l = d.inner_l - 2.0
+    # Separate ledges support the two board elevations without crossing the
+    # vertical overlap region occupied by the lower SSD.
+    rail_w = 0.70
     rail_x = d.inner_w / 2 - rail_w / 2
+    ssd_y = d.ssd_l / 2 - d.assembly_l / 2
+    pcb_support_y0 = d.ssd_l - d.assembly_l / 2 + 0.5
+    pcb_support_y1 = d.assembly_l / 2 - 0.5
     for x in (-rail_x, rail_x):
-        rail = (
-            cq.Workplane("XY")
-            .box(rail_w, rail_l, rail_h, centered=(True, True, False))
-            .translate((x, 0, d.floor))
-        )
-        base = base.union(rail)
+        for y, length, height in [(ssd_y, d.ssd_l - 1, d.ssd_z),
+                ((pcb_support_y0 + pcb_support_y1)/2, pcb_support_y1-pcb_support_y0, d.controller_z)]:
+            rail = cq.Workplane('XY').box(rail_w, length, height, centered=(True,True,False)).translate((x,y,d.floor))
+            base = base.union(rail)
 
-    return base
+    # Relief around the bottom-side U31 flash envelope; driven by board.json.
+    g = board_config()['geometry']
+    fx, fy = g['flash_center_from_pcb_left_bottom']
+    fw, fl, fh = g['flash_body_xyz']
+    relief = cq.Workplane('XY').box(fw + 0.5, fl + 0.5, fh + 0.2,
+        centered=(True,True,False)).translate((d.local_x(fx),d.assembly_y(fy),d.floor+d.controller_z-fh-0.1))
+    return base.cut(relief)
 
 
 def make_lid(d: Design) -> cq.Workplane:
@@ -169,12 +179,17 @@ def make_lid(d: Design) -> cq.Workplane:
         .box(
             d.thermal_insert_w + 2 * d.thermal_pocket_clearance,
             d.thermal_insert_l + 2 * d.thermal_pocket_clearance,
-            d.thermal_insert_t,
+            d.roof + 0.02,
             centered=(True, True, False),
         )
-        .translate((asm_x, asm_y, d.lid_tongue_h))
+        .translate((asm_x, asm_y, d.lid_tongue_h - 0.01))
     )
     lid = lid.cut(pocket)
+    g = board_config()['geometry']
+    for key, size_key in [('service_center_xy', 'service_plug_xyz'), ('isolation_center_xy', 'isolation_body_xyz')]:
+        x, y = g[key]; w, length, _ = g[size_key]
+        aperture = cq.Workplane('XY').box(w + 0.4, length + 0.4, d.case_h + 2, centered=(True, True, False)).translate((x, y, -1))
+        lid = lid.cut(aperture)
     return lid
 
 
@@ -199,13 +214,13 @@ def make_ssd_proxy(d: Design) -> cq.Workplane:
 def make_thermal_insert(d: Design) -> cq.Workplane:
     asm_x = d.local_x(d.asm_x_from_pcb_left)
     asm_y = d.assembly_y(d.asm_y_from_pcb_bottom)
-    z = d.base_h + d.roof - d.thermal_insert_t
-    return (
-        cq.Workplane("XY")
-        .box(d.thermal_insert_w, d.thermal_insert_l, d.thermal_insert_t,
-             centered=(True, True, False))
-        .translate((asm_x, asm_y, z))
-    )
+    z = d.base_h
+    insert = cq.Workplane('XY').box(d.thermal_insert_w, d.thermal_insert_l, d.roof,
+                centered=(True, True, False)).translate((asm_x, asm_y, z))
+    # Captured lower flange prevents the insert falling through the roof.
+    flange = cq.Workplane('XY').box(d.thermal_insert_w + 1.2, d.thermal_insert_l + 1.2, 0.4,
+                centered=(True, True, False)).translate((asm_x, asm_y, z - 0.4))
+    return insert.union(flange)
 
 
 def export_all(out_dir: Path) -> None:
@@ -218,6 +233,19 @@ def export_all(out_dir: Path) -> None:
     ssd = make_ssd_proxy(d)
     lid_assembled = lid.translate((0, 0, d.base_h - d.lid_tongue_h))
     thermal = make_thermal_insert(d)
+    g = board_config()['geometry']
+    def envelope(xy, size, z):
+        return cq.Workplane('XY').box(*size, centered=(True, True, False)).translate((*xy, z))
+    pcb_top = d.floor + d.controller_z + d.pcb_t
+    service = envelope(g['service_center_xy'], g['service_body_xyz'], pcb_top)
+    isolation = envelope(g['isolation_center_xy'], g['isolation_body_xyz'], pcb_top)
+    chip_xy = (d.local_x(d.asm_x_from_pcb_left), d.assembly_y(d.asm_y_from_pcb_bottom))
+    chip = envelope(chip_xy, g['asm_body_xyz'], pcb_top)
+    fx, fy = g['flash_center_from_pcb_left_bottom']
+    flash = envelope((d.local_x(fx),d.assembly_y(fy)),g['flash_body_xyz'],d.floor+d.controller_z-g['flash_body_xyz'][2])
+    chip_top = pcb_top + g['asm_body_xyz'][2]
+    thermal_pad = envelope(chip_xy, [g['asm_body_xyz'][0], g['asm_body_xyz'][1], d.base_h-0.4-chip_top], chip_top)
+    plug = envelope(g['service_center_xy'], g['service_plug_xyz'], pcb_top + g['service_body_xyz'][2])
 
     parts = {
         "base": base,
@@ -225,6 +253,12 @@ def export_all(out_dir: Path) -> None:
         "pcb_proxy": pcb,
         "ssd_2230_proxy": ssd,
         "thermal_insert": thermal,
+        "thermal_pad": thermal_pad,
+        "flash_envelope": flash,
+        "asm_package_envelope": chip,
+        "service_connector_envelope": service,
+        "isolation_shunts_envelope": isolation,
+        "service_plug_keepout": plug,
     }
 
     for name, solid in parts.items():
@@ -237,11 +271,29 @@ def export_all(out_dir: Path) -> None:
         )
 
     compound = cq.Compound.makeCompound([
-        base.val(), lid_assembled.val(), pcb.val(), ssd.val(), thermal.val()
+        base.val(), lid_assembled.val(), pcb.val(), ssd.val(), thermal.val(), thermal_pad.val(), chip.val(), service.val(), isolation.val(), flash.val()
     ])
     exporters.export(compound, str(out_dir / "assembly.step"))
 
+    # Check actual solids, not bounding boxes alone. Deliberate contacts have zero volume.
+    assembled = {**parts, 'lid': lid_assembled}
+    checks = []
+    for a, b in [('base','flash_envelope'),('flash_envelope','ssd_2230_proxy'),('base','pcb_proxy'),('base','ssd_2230_proxy'),('lid','pcb_proxy'),
+                 ('lid','service_connector_envelope'),('lid','isolation_shunts_envelope'),
+                 ('lid','thermal_insert'),('lid','thermal_pad'),('lid','service_plug_keepout'),
+                 ('thermal_insert','service_plug_keepout'),('thermal_pad','isolation_shunts_envelope'),
+                 ('asm_package_envelope','service_connector_envelope'),('pcb_proxy','ssd_2230_proxy')]:
+        volume = assembled[a].intersect(assembled[b]).val().Volume()
+        checks.append(dict(parts=[a,b],intersection_mm3=volume,pass_check=volume < 1e-5))
+    valid = {name: solid.val().isValid() for name, solid in assembled.items()}
+    validation = dict(board_config_sha256=board_hash(),geometry_valid=valid,clearances=checks,
+                      passed=all(valid.values()) and all(c['pass_check'] for c in checks),
+                      limitations=['Component envelopes and stack heights are assumptions, not confirmed part dimensions.',
+                                   'No completed routed PCB, USB4 signal-integrity or physical thermal validation.'])
+    (out_dir/'cad-validation.json').write_text(json.dumps(validation,indent=2)+'\n')
+    if not validation['passed']: raise ValueError('CAD interference/validity failure; see cad-validation.json')
     dimensions = {
+        "board_config_sha256": board_hash(),
         "source_derived_mm": {
             "controller_pcb_width": d.pcb_w,
             "controller_pcb_length": d.pcb_l,

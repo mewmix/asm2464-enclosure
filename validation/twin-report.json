@@ -1,0 +1,168 @@
+{
+  "status": "CPU/CAD milestone PASS; full dual-backend milestone BLOCKED",
+  "board_config_sha256": "4119f42f19521ea654c7f155860678b76f4ef5dbd7819869f7d4c107a0395908",
+  "simulation": {
+    "cpu_boot": "PASS",
+    "cpu_brick": "PASS",
+    "cpu_recovery": "PASS",
+    "rtl": "BLOCKED: no RTL in pinned source",
+    "differential": "BLOCKED: second execution backend absent",
+    "upstream_commit": "acc935d351d49c66ab8d1026ee8cb4617609f782",
+    "board_config_sha256": "4119f42f19521ea654c7f155860678b76f4ef5dbd7819869f7d4c107a0395908",
+    "firmware_sha256": "6206fae27da66d3d05e93093cb8e0721007614679fb7e4b583071f37db77f2a7",
+    "flash_sha256": "318426eaeed2fde0bbe765457bf29b4f8fe5c7ea1a87909f38e28bd9bb842c82",
+    "uart": "ASM2464 REF FW\nBUILD=68caac1a174a\nFLASH_ID=BA6015\nFLASH_STATUS=00\nBOOT=OK\n",
+    "first_boot_instructions": 2344,
+    "recovered_boot_instructions": 2344,
+    "events": 3364,
+    "trace_sha256": "79450c03bb400c877f62621920d8840742ef1c1cf216294663961d7e161576f3",
+    "physical_validation": "NOT PERFORMED",
+    "boot_rom": "unmodeled; uses authoritative explicit cold-load convention"
+  },
+  "cad": {
+    "board_config_sha256": "4119f42f19521ea654c7f155860678b76f4ef5dbd7819869f7d4c107a0395908",
+    "geometry_valid": {
+      "base": true,
+      "lid": true,
+      "pcb_proxy": true,
+      "ssd_2230_proxy": true,
+      "thermal_insert": true,
+      "thermal_pad": true,
+      "flash_envelope": true,
+      "asm_package_envelope": true,
+      "service_connector_envelope": true,
+      "isolation_shunts_envelope": true,
+      "service_plug_keepout": true
+    },
+    "clearances": [
+      {
+        "parts": [
+          "base",
+          "flash_envelope"
+        ],
+        "intersection_mm3": 0.0,
+        "pass_check": true
+      },
+      {
+        "parts": [
+          "flash_envelope",
+          "ssd_2230_proxy"
+        ],
+        "intersection_mm3": 0.0,
+        "pass_check": true
+      },
+      {
+        "parts": [
+          "base",
+          "pcb_proxy"
+        ],
+        "intersection_mm3": 0.0,
+        "pass_check": true
+      },
+      {
+        "parts": [
+          "base",
+          "ssd_2230_proxy"
+        ],
+        "intersection_mm3": 0.0,
+        "pass_check": true
+      },
+      {
+        "parts": [
+          "lid",
+          "pcb_proxy"
+        ],
+        "intersection_mm3": 0.0,
+        "pass_check": true
+      },
+      {
+        "parts": [
+          "lid",
+          "service_connector_envelope"
+        ],
+        "intersection_mm3": 0.0,
+        "pass_check": true
+      },
+      {
+        "parts": [
+          "lid",
+          "isolation_shunts_envelope"
+        ],
+        "intersection_mm3": 0.0,
+        "pass_check": true
+      },
+      {
+        "parts": [
+          "lid",
+          "thermal_insert"
+        ],
+        "intersection_mm3": 0.0,
+        "pass_check": true
+      },
+      {
+        "parts": [
+          "lid",
+          "thermal_pad"
+        ],
+        "intersection_mm3": 0.0,
+        "pass_check": true
+      },
+      {
+        "parts": [
+          "lid",
+          "service_plug_keepout"
+        ],
+        "intersection_mm3": 0.0,
+        "pass_check": true
+      },
+      {
+        "parts": [
+          "thermal_insert",
+          "service_plug_keepout"
+        ],
+        "intersection_mm3": 0.0,
+        "pass_check": true
+      },
+      {
+        "parts": [
+          "thermal_pad",
+          "isolation_shunts_envelope"
+        ],
+        "intersection_mm3": 0.0,
+        "pass_check": true
+      },
+      {
+        "parts": [
+          "asm_package_envelope",
+          "service_connector_envelope"
+        ],
+        "intersection_mm3": 0.0,
+        "pass_check": true
+      },
+      {
+        "parts": [
+          "pcb_proxy",
+          "ssd_2230_proxy"
+        ],
+        "intersection_mm3": 0.0,
+        "pass_check": true
+      }
+    ],
+    "passed": true,
+    "limitations": [
+      "Component envelopes and stack heights are assumptions, not confirmed part dimensions.",
+      "No completed routed PCB, USB4 signal-integrity or physical thermal validation."
+    ]
+  },
+  "deterministic_firmware": true,
+  "cpu_boot_repeatability": {
+    "classification": "timing-only difference",
+    "equal": true
+  },
+  "fault_cases": 18,
+  "unsupported": [
+    "invalid firmware hash"
+  ],
+  "rtl": "BLOCKED: no RTL files in authoritative source pin",
+  "fabrication_ready": false
+}

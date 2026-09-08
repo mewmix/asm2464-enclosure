@@ -245,32 +245,11 @@ Run PCB and enclosure development in parallel from this point onward.
 
 ## 10. Simulation before fabrication
 
-The CPU/firmware emulator is not enough by itself. Add a board-level digital twin:
+The four coupled Rev-A artifacts and mandatory simulation requirements are defined in [`SIMULATION_WORK_INSTRUCTIONS.md`](SIMULATION_WORK_INSTRUCTIONS.md), sections 13–25. Read and follow that contract in full. Reuse pinned imports of the existing CPU emulator and Verilog model from `mewmix/asm2464pd-opal`; do not build replacement ASM implementations.
 
-```text
-ASM CPU/FW emulator
-  |-- SPI controller -> behavioral flash -> virtual external programmer
-  |-- UART -> virtual terminal/test harness
-  |-- reset/boot -> board state model
-  `-- PCIe/NVMe -> synthetic endpoint / optional LiteNVMe differential oracle
-```
+The first milestone is deterministic generic firmware boot and deliberate brick/recovery using both execution backends on the same virtual board. Both must ultimately pass. Unsupported capabilities are recorded blockers, never passing mocks. The flash, UART, reset, programmer ownership, fault corpus, and synthetic PCIe/NVMe endpoint belong to the common board model. Recovery must represent the circuit actually selected for the PCB.
 
-Required recovery simulation:
-
-1. boot known-good flash image;
-2. capture UART boot output;
-3. corrupt or erase the boot image;
-4. verify failed boot behavior;
-5. assert the modeled safe SPI-ownership state;
-6. externally identify/read/erase/program the flash;
-7. verify readback/hash;
-8. release programmer/reset;
-9. boot recovered firmware;
-10. require UART confirmation.
-
-Fault-injection cases should include interrupted page program, interrupted erase, brownout, stale WIP/WEL state, bad JEDEC response, reset races, and simulated bus contention.
-
-LiteNVMe is a **secondary reference**, not an ASM oracle. Stock ASM evidence remains authoritative when reproducing ASM-specific behavior.
+Keep existing circuit-level/electrical checks and physical validation gates. LiteNVMe remains an optional secondary oracle subordinate to stock ASM evidence.
 
 ## 11. Automated validation loop
 
@@ -308,7 +287,7 @@ Before ordering Rev A, require all of the following:
 - brick/recovery simulation passes;
 - manufacturing notes and bring-up procedure committed.
 
-## 13. Fabricate, assemble, and close the loop
+## Physical fabrication, assembly, and feedback
 
 On physical Rev A:
 
@@ -327,4 +306,4 @@ The physical board is the final oracle for the next revision.
 
 Use this as the starting instruction for an Astra/Work/Codex-style agent:
 
-> Work directly in `mewmix/asm2464-enclosure`. Read `AGENTS.md`, `WORKFLOW.md`, `PROJECT_PLAN.md`, `DEBUG_ACCESS_AGENT_INSTRUCTIONS.md`, and the ASM2464PD datasheet notes before editing anything. Treat the Leaves232 ASM2464PD 2230 project as a read-only reference baseline. Reconstruct evidence first, then make the smallest reviewable design change. Use KiStack for KiCad-specific validation and T3CAD as the visual steering/inspection workspace. After every schematic or PCB pass run the available ERC/DRC/export checks and record unresolved assumptions. Preserve high-speed topology and mechanical datums deliberately. Our required service access is only UART debug plus safe direct SPI firmware-flash recovery. Do not claim a design is fabrication-ready until electrical, mechanical, thermal, recovery-simulation, and manufacturing-output gates in `WORKFLOW.md` pass. Commit small, auditable changes with evidence and validation notes.
+> The Rev-A deliverable consists of FOUR coupled artifacts: (1) KiCad ASM2464PD development board; (2) CadQuery mechanical/thermal enclosure; (3) imported/pinned ASM2464 CPU-emulator + Verilog simulation backend; (4) board-level simulation proving firmware boot, UART debugging, external SPI programming, deliberate bricking, and recovery. Check changes in each layer against the other layers. Reuse the existing ASM emulator/RTL; never replace it with a toy ASM behavioral stub. Work directly in `mewmix/asm2464-enclosure`. Read `AGENTS.md`, `WORKFLOW.md`, `PROJECT_PLAN.md`, `DEBUG_ACCESS_AGENT_INSTRUCTIONS.md`, `SIMULATION_WORK_INSTRUCTIONS.md` (all mandatory sections 13–25), and the ASM2464PD datasheet notes before editing anything. Treat the Leaves232 ASM2464PD 2230 project as a read-only reference baseline. Reconstruct evidence first, then make the smallest reviewable design change. Use KiStack for KiCad-specific validation and T3CAD as the visual steering/inspection workspace. After every schematic or PCB pass run the available ERC/DRC/export checks and record unresolved assumptions. Preserve high-speed topology and mechanical datums deliberately. Our required service access is only UART debug plus safe direct SPI firmware-flash recovery. Do not claim a design is fabrication-ready until electrical, mechanical, thermal, recovery-simulation, and manufacturing-output gates in `WORKFLOW.md` pass. Commit small, auditable changes with evidence and validation notes.

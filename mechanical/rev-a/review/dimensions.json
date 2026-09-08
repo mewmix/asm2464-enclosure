@@ -1,0 +1,42 @@
+{
+  "board_config_sha256": "4119f42f19521ea654c7f155860678b76f4ef5dbd7819869f7d4c107a0395908",
+  "source_derived_mm": {
+    "controller_pcb_width": 22.039834,
+    "controller_pcb_length": 33.6804,
+    "usb_c_center_from_pcb_left_bottom": [
+      11.0699804,
+      29.187267
+    ],
+    "m2_connector_center_from_pcb_left_bottom": [
+      11.0238794,
+      4.6976538
+    ],
+    "asm2464pd_center_from_pcb_left_bottom": [
+      13.6672574,
+      14.8704808
+    ]
+  },
+  "assumed_mm": {
+    "m2_2230_envelope": [
+      22.0,
+      30.0,
+      0.8
+    ],
+    "ssd_controller_overlap": 5.0,
+    "xy_clearance_per_side": 0.35,
+    "wall": 1.5,
+    "floor": 1.2,
+    "roof": 1.5,
+    "internal_height_above_floor": 8.0
+  },
+  "result_mm": {
+    "assembled_electronics_length": 58.6804,
+    "outer_width": 25.739834,
+    "outer_length": 62.3804,
+    "outer_height": 10.7,
+    "asm2464pd_case_xy": [
+      2.647340400000001,
+      10.530280799999996
+    ]
+  }
+}

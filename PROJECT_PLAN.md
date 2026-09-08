@@ -11,6 +11,12 @@ The development scope is deliberately narrow:
 
 Do not add JTAG, SWD, I2C, general GPIO, or unrelated service interfaces unless a later requirement explicitly needs them.
 
+## Mandatory coupled simulation deliverable
+
+Rev-A consists of the KiCad board, CadQuery mechanical/thermal enclosure, imported/pinned existing ASM CPU-emulator + Verilog backends, and a common board model proving firmware boot, UART, external SPI programming, deliberate bricking, and recovery. Check changes across all four layers. Follow [`SIMULATION_WORK_INSTRUCTIONS.md`](SIMULATION_WORK_INSTRUCTIONS.md), sections 13–25, in full.
+
+The first simulation milestone is deterministic project-owned reference firmware boot and brick/recovery against both imported backends using the same board and fault corpus. Both must ultimately pass; unsupported execution is a recorded blocker. More realistic firmware follows without changing the board underneath it. Physical validation below remains required.
+
 ## Primary references
 
 ### ASM2464PD datasheet

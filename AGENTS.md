@@ -10,8 +10,13 @@ Develop a compact ASM2464PD + M.2 2230 USB4 enclosure/PCB with integrated firmwa
 2. `PROJECT_PLAN.md`
 3. `DEBUG_ACCESS_AGENT_INSTRUCTIONS.md`
 4. `reference/datasheets/ASM2464PD.md`
+5. `SIMULATION_WORK_INSTRUCTIONS.md` — mandatory sections 13–25
 
 Then inspect the current branch tip and the public Leaves232 reference design before changing schematic, PCB, or enclosure geometry.
+
+## Coupled Rev-A deliverables
+
+Rev-A includes the KiCad board, CadQuery mechanical/thermal enclosure, pinned existing ASM CPU-emulator and Verilog backends, and the common board simulation proving boot/UART/SPI programming/bricking/recovery. Check every layer change against the others. Reuse the authoritative ASM stack; do not create replacement CPU/RTL implementations. Follow `SIMULATION_WORK_INSTRUCTIONS.md` in full.
 
 ## Working rules
 
