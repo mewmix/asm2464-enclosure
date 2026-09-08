@@ -26,6 +26,8 @@ def build():
     (OUT/'asm2464_ref.bin').write_bytes(raw);(OUT/'flash.bin').write_bytes(image)
     banner=f'ASM2464 REF FW\nBUILD={build_id}\nFLASH_ID={jedec.hex().upper()}\nFLASH_STATUS=00\nBOOT=OK\n'
     manifest=dict(source_commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),source_sha256=digest(code),board_config_sha256=sha256(),upstream_commit=json.loads((ROOT/'simulation/asm2464/upstream/import-lock.json').read_text())['commit'],toolchain=subprocess.check_output(['sdcc','--version'],text=True).splitlines()[0],build_command=command,firmware_sha256=digest(raw),flash_image_sha256=digest(image),firmware_size=len(raw),flash_offset=offset,load_address=0,expected_uart_banner=banner,build_id=build_id,elf='not applicable: SDCC mcs51 emits IHX/map/sym; no ELF invented',boot_rom='unmodeled: uses upstream explicit cold-load convention',hash_enforcement='not implemented by reference boot; offline SHA-256 verifies programmer readback')
+    manifest.update(source_class='GENERIC_REFERENCE_FIRMWARE',flash_profile='rev_a_candidate',
+                    evidence='EMULATOR_MODEL_ONLY; diagnostic image does not qualify stock firmware')
     (OUT/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
     (OUT/'SHA256SUMS').write_text(f'{digest(raw)}  asm2464_ref.bin\n{digest(image)}  flash.bin\n')
     print(f'Built {len(raw)} bytes, id={build_id}');return manifest

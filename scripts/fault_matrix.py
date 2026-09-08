@@ -89,6 +89,9 @@ def run():
         except OwnershipError:pass
         assert any(e['event']=='BUS_CONTENTION' for e in b.events);return 'Shorted CLK link blocks programming'
     record('ASM/programmer contention','detect a closed link during external access',contention)
+    for row in rows:
+        row.update(source_class='GENERIC_REFERENCE_FIRMWARE',hardware_touched=False,
+                   upstream_commit=json.loads((ROOT/'simulation/asm2464/upstream/import-lock.json').read_text())['commit'])
     path=ROOT/'validation/fault-matrix.json';path.write_text(json.dumps(rows,indent=2)+'\n')
     failures=[r for r in rows if r['cpu_result']=='FAIL'];print(f'{len(rows)} fault cases; {len(failures)} failures; hash enforcement unsupported; RTL blocked')
     if failures:raise AssertionError(failures)

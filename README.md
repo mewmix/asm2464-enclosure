@@ -66,7 +66,17 @@ Generated STEP/STL files belong under `mechanical/rev-a/build/` and are intentio
 
 ## Integrated CAD / simulation milestone
 
-The shared board configuration now drives service access, physical SPI-isolation shunts, flash envelope clearance, and the virtual board. The imported upstream CPU executes project-owned reference firmware through UART/SPI MMIO. The CPU regression proves boot, deliberate flash bricking, programmer erase/program/full readback, and recovered boot.
+The primary simulation target is now stock/reconstructed ASM behavior, pinned
+to lifecycle commit `84c990c` with physical baseline `47aed2c`. The stock code
+mode executes exact bounded helpers with boot ROM bypassed; full stock SPI
+startup remains blocked. The 512 KiB stock flash profile is separate from the
+2 MiB Rev-A design assumption. See [stock evidence and limits](validation/STOCK_GROUNDING.md).
+
+The shared board configuration drives service access, SPI-isolation shunts,
+flash envelope clearance and the virtual board. The secondary generic CPU
+regression validates this project-owned diagnostic image's modeled UART/SPI,
+brick and recovery behavior. It does not establish stock firmware or physical
+silicon behavior. Existing CAD renders remain historical until regenerated.
 
 ```bash
 python -m pip install -r simulation/requirements.txt
