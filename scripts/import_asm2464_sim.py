@@ -7,7 +7,7 @@ UP = ROOT / 'simulation/asm2464/upstream'
 def main():
     p=argparse.ArgumentParser(); p.add_argument('--source', type=Path, help='local git checkout containing the pinned commit'); args=p.parse_args()
     lock=json.loads((UP/'import-lock.json').read_text())
-    if lock['commit'] != '84c990c91eb41948649ead0b28d6720c31c434c3':
+    if lock['commit'] != 'da87259d6bc0e2b86ff8bd0deb22938bd9fa89d7':
         raise ValueError('unreviewed source pin; review script and lock together')
     if lock['physical_baseline_commit'] != '47aed2cd0fba21011b4f69ad34781e2c924b7f48':
         raise ValueError('physical baseline mismatch')
