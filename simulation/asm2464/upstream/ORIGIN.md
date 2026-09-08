@@ -12,7 +12,11 @@
 - Routing/controller/Admin/Q1 completion ancestry is EMULATOR_MODEL_ONLY.
   It does not establish physical link generation, namespace/security ownership,
   complete firmware teardown, or qualification of the newer lifecycle image.
-- Exact imported paths and content hashes: `import-lock.json` (14 files).
+- Exact imported paths and content hashes: `import-lock.json` (15 files).
+- The newly added test/test_nvme_queue_causality.py is retained unchanged to run
+  its 19 upstream model regressions. Its generic route is not the enclosure's
+  canonical stock route fixture. Existing lifecycle test sources remain evidence
+  references because their compiled-firmware dependencies are not imported.
 - Local patches: none. Every imported file matches its upstream Git blob SHA.
 - Runtime dependencies: Python standard library; the Pyrite dependency `tools/tcg_session.py` is included because upstream hardware imports it.
 - Omitted: production firmware/images, USB transport/proxy tools, unrelated firmware builds, other test suites and their fixtures. The two lifecycle test sources are evidence references, not independently runnable suites in this subset.

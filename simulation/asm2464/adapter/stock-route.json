@@ -1,0 +1,299 @@
+{
+  "physical_baseline_commit": "47aed2cd0fba21011b4f69ad34781e2c924b7f48",
+  "classification": "INSTRUCTION_PROVEN table and CALLER_CALLEE_PROVEN stock alignment; fixture execution EMULATOR_MODEL_ONLY",
+  "sources": [
+    {
+      "path": "handmade/src/pcie_pio.h",
+      "git_blob_sha1": "450ffa52eb53215705ad0f070130e7ab1151925f",
+      "sha256": "0bfa4f221311dc14f408f262cdece3d757e94f600f2205d421f65c5f6c20fe3d"
+    },
+    {
+      "path": "audit/stock_pcie_enumeration_reconstruction_20260904.json",
+      "git_blob_sha1": "ac2225491a1cfd19b2a193eabbf6c29f129904e0",
+      "sha256": "1664b4411b66ed2af2a87275c569af0860dc3bec5335cdb6b6e8c13795dc8bd0"
+    }
+  ],
+  "table_rows": [
+    [
+      6,
+      7,
+      0,
+      2,
+      1,
+      0
+    ],
+    [
+      1,
+      3,
+      0,
+      0,
+      4,
+      6
+    ],
+    [
+      8,
+      15,
+      1,
+      208,
+      0,
+      208
+    ],
+    [
+      1,
+      3,
+      0,
+      0,
+      4,
+      0
+    ],
+    [
+      4,
+      15,
+      255,
+      255,
+      255,
+      255
+    ],
+    [
+      4,
+      15,
+      0,
+      208,
+      0,
+      0
+    ]
+  ],
+  "stock_transaction_ledger": [
+    {
+      "step": 1,
+      "stage": "bridge_header_class_check",
+      "target": "Internal bridge",
+      "bdf": "Bus 0 (Type 0)",
+      "operation": "Block configuration read and bridge-class validation",
+      "pc_2023": {
+        "caller": "0xC398",
+        "helper": "0xDC06"
+      },
+      "pc_2024": {
+        "caller": "0xCE0F",
+        "helper": "0xE009"
+      },
+      "classification": "CALLER_CALLEE_PROVEN; exact class semantics require helper trace"
+    },
+    {
+      "step": 2,
+      "stage": "bridge_capability_walk",
+      "target": "Internal bridge",
+      "bdf": "Bus 0 (Type 0)",
+      "operation": "64-DWORD configuration read; walk capability list from byte offset 0x34",
+      "pc_2023": {
+        "caller": "0xC3A0",
+        "helper": "0x9FAD"
+      },
+      "pc_2024": {
+        "caller": "0xCE17",
+        "helper": "0x9EB8"
+      },
+      "classification": "CALLER_CALLEE_PROVEN"
+    },
+    {
+      "step": 3,
+      "stage": "bridge_bus_numbers",
+      "target": "Internal bridge",
+      "bdf": "00:00.0",
+      "operation": "CfgWr0, DWORD index 6 (byte offset 0x18), BE=0x07; stage bus-number bytes",
+      "pc_2023": {
+        "caller": "0xC3B7",
+        "helper": "0xD741",
+        "dispatch_call": "0xD776"
+      },
+      "pc_2024": {
+        "caller": "0xCE2E",
+        "helper": "0xDB09",
+        "dispatch_call": "0xDB3E"
+      },
+      "classification": "CALLER_CALLEE_PROVEN; field names are PCIe-standard interpretation"
+    },
+    {
+      "step": 4,
+      "stage": "bridge_command",
+      "target": "Internal bridge",
+      "bdf": "00:00.0",
+      "operation": "CfgWr0 to DWORD index 1 (byte offset 0x04), BE=0x03",
+      "pc_2023": {
+        "caller": "0xC3CD",
+        "helper": "0xE67A"
+      },
+      "pc_2024": {
+        "caller": "0xCE38",
+        "helper": "0xD2CD",
+        "dispatch_call": "0xD31C"
+      },
+      "classification": "CALLER_CALLEE_PROVEN; exact staged value differs by path/release"
+    },
+    {
+      "step": 5,
+      "stage": "bridge_wide_window",
+      "target": "Internal bridge",
+      "bdf": "00:00.0",
+      "operation": "CfgWr0 to DWORD index 8 (byte offset 0x20), BE=0x0F; B220..B223=01 D0 00 D0",
+      "pc_2023": {
+        "caller": "0xC3DE",
+        "helper": "0xE67A"
+      },
+      "pc_2024": {
+        "caller": "0xCE46",
+        "helper": "0xEA96",
+        "dispatch_call": "0xEA9E"
+      },
+      "classification": "CALLER_CALLEE_PROVEN; window addresses are PCIe-standard interpretation"
+    },
+    {
+      "step": 6,
+      "stage": "per_device_bridge_window",
+      "target": "Internal bridge",
+      "bdf": "00:00.0",
+      "operation": "CfgWr0 offset 0x20; device 0 stages 00 D0 00 D0, device 1 stages 00 E0 00 E0",
+      "pc_2023": {
+        "caller": "0xC6B7",
+        "staging": "0xC6A0..0xC6B4"
+      },
+      "pc_2024": {
+        "caller": "0xC5B8/0xC5D0",
+        "helper": "0xEA96"
+      },
+      "classification": "CALLER_CALLEE_PROVEN; aperture meaning is PCIe-standard interpretation"
+    },
+    {
+      "step": 7,
+      "stage": "endpoint_header_class_check",
+      "target": "Selected downstream function",
+      "bdf": "Bus 1; DevFn selected by surrounding context",
+      "operation": "Block configuration read and NVMe-class result check",
+      "pc_2023": {
+        "caller": "0xC6C3",
+        "helper": "0xDC06"
+      },
+      "pc_2024": {
+        "caller": "0xC5DC",
+        "helper": "0xE009"
+      },
+      "classification": "CALLER_CALLEE_PROVEN; exact live BDF remains physically unverified"
+    },
+    {
+      "step": 8,
+      "stage": "endpoint_capability_walk",
+      "target": "Selected downstream function",
+      "bdf": "Current endpoint context",
+      "operation": "64-DWORD configuration read and capability traversal at bank-1 entry 0x8000",
+      "pc_2023": {
+        "caller": "0x8000",
+        "helper": "0x9FAD"
+      },
+      "pc_2024": {
+        "caller": "0x8000",
+        "helper": "0x9EB8"
+      },
+      "classification": "CALLER_CALLEE_PROVEN"
+    },
+    {
+      "step": 9,
+      "stage": "endpoint_quiesce",
+      "target": "Selected downstream function",
+      "bdf": "Current endpoint context",
+      "operation": "CfgWr1 to DWORD index 1 (byte offset 0x04), BE=0x03",
+      "pc_2023": {
+        "caller": "0x8019",
+        "helper": "0xE67A"
+      },
+      "pc_2024": {
+        "caller": "0x800D",
+        "helper": "0xD2CD",
+        "dispatch_call": "0xD31C"
+      },
+      "classification": "CALLER_CALLEE_PROVEN; 0x0400 scalar requires full wrapper trace"
+    },
+    {
+      "step": 10,
+      "stage": "bar0_all_ones_probe",
+      "target": "Selected downstream function",
+      "bdf": "Current endpoint context",
+      "operation": "CfgWr1 to DWORD index 4 (BAR0), BE=0x0F, all-ones staging",
+      "pc_2023": {
+        "caller": "0x802E"
+      },
+      "pc_2024": {
+        "caller": "0x8020"
+      },
+      "classification": "INSTRUCTION_PROVEN within pinned bank-1 region"
+    },
+    {
+      "step": 11,
+      "stage": "bar0_readback",
+      "target": "Selected downstream function",
+      "bdf": "Current endpoint context",
+      "operation": "CfgRd1 of BAR0 followed by B223 & 0x09 validation",
+      "pc_2023": {
+        "caller": "0x8037",
+        "validation": "0x8040..0x8046"
+      },
+      "pc_2024": {
+        "caller": "0x8029",
+        "validation": "0x8032..0x8038"
+      },
+      "classification": "INSTRUCTION_PROVEN; BAR semantic labels are PCIe-standard interpretation"
+    },
+    {
+      "step": 12,
+      "stage": "bar_assignment_loop",
+      "target": "Selected downstream function",
+      "bdf": "Current endpoint context",
+      "operation": "Six CfgWr1 requests: first slot stages 0x00D00000; remaining five stage zero",
+      "pc_2023": {
+        "loop": "0x8050..0x8091",
+        "dispatch_call": "0x8071"
+      },
+      "pc_2024": {
+        "loop": "0x8042..0x8083",
+        "dispatch_call": "0x8063"
+      },
+      "classification": "INSTRUCTION_PROVEN within pinned bank-1 region"
+    },
+    {
+      "step": 13,
+      "stage": "endpoint_command_and_device_control",
+      "target": "Selected downstream function",
+      "bdf": "Current endpoint context",
+      "operation": "Later Command-register write, then conditional PCIe Device Control write",
+      "pc_2023": {
+        "command_call": "0x80A5",
+        "device_control_call": "0x80C5"
+      },
+      "pc_2024": {
+        "command_call": "0x8088",
+        "device_control_call": "0x80AB"
+      },
+      "classification": "CALLER_CALLEE_PROVEN; exact scalar/bitfield semantics require wrapper trace"
+    },
+    {
+      "step": 14,
+      "stage": "restore_window_then_first_cap_mrd",
+      "target": "Bridge then selected endpoint",
+      "bdf": "Current contexts",
+      "operation": "Restore 01 D0 00 D0 staging; later issue first NVMe CAP MRd at 0x00D00000",
+      "pc_2023": {
+        "window_path": "0x8186",
+        "cap_mrd_call": "0x8213",
+        "mrd_helper": "0xE656"
+      },
+      "pc_2024": {
+        "window_call": "0x814E",
+        "cap_mrd_call": "0x81FA",
+        "mrd_helper": "0xEAFE"
+      },
+      "classification": "CONTROL_FLOW_PROVEN; physical routing remains unresolved"
+    }
+  ],
+  "physical_failure_boundary": "STOCK_PRE_BAR_CONFIGURATION_PATH_MISSING_FROM_HANDMADE; PHYSICAL_UR_CAUSE_NOT_YET_ISOLATED_TO_ONE_REGISTER",
+  "scope": "Exact pinned stock-aligned pre-BAR table and ordered write projection for synthetic Bus1 DevFn0; not complete firmware enumeration or physical PCIe qualification."
+}

@@ -1,4 +1,6 @@
 """One board for CPU and future imported RTL; no backend-owned flash."""
+import hashlib
+import json
 from simulation.board.config import load, sha256
 from simulation.flash.nor import NorFlash, FlashError
 from simulation.board.endpoint import DownstreamEndpoint
@@ -11,7 +13,9 @@ class Board:
         self.flash=NorFlash(self.config['flash'],self.emit)
         self.reset_asserted=True; self.links={n:True for n in self.config['recovery']['links']}
         self.programmer_attached=False;self.asm_refuses_release=False;self.uart=bytearray()
-        self.emit('BOARD_CONFIG',sha256=sha256(),revision=self.config['revision'])
+        self.emit('BOARD_CONFIG',sha256=sha256(),revision=self.config['revision'],
+                  flash_profile=self.config['flash'].get('profile','custom'),
+                  effective_flash_sha256=hashlib.sha256(json.dumps(self.config['flash'],sort_keys=True).encode()).hexdigest())
     def attach_backend(self,backend):
         if self.backend is not None and self.backend is not backend:
             raise OwnershipError('board already has a backend')
