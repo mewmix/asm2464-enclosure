@@ -59,30 +59,42 @@ class Memory:
     # Bank 1 code starts at file offset 0xFF6B, mapped to address space 0x8000-0xFFFF
     BANK1_FILE_BASE = 0xFF6B
 
+    # Bank 0 size: 65,387 bytes (0x0000..0xFF6A)
+    BANK0_SIZE = 0xFF6B
+    # Bank 1 size: 32,619 bytes (mapped to CPU 0x8000..0xFF6A)
+    BANK1_SIZE = 32619
+
     def read_code(self, addr: int) -> int:
         """
-        Read from CODE memory with banking.
+        Read from CODE memory with banking and strict extent limits.
 
-        The ASM2464PD has ~98KB of firmware with banking:
-        - 0x0000-0x7FFF: Always bank 0 (32KB shared)
-        - 0x8000-0xFFFF: Bank 0 or Bank 1 based on DPX register
+        The ASM2464PD firmware (fw.bin) is 98,006 bytes split into two banks:
+        - Bank 0: 65,387 bytes (0x0000..0xFF6A in file)
+            - Lower 32KB (0x0000..0x7FFF): Common shared area
+            - Upper 32KB (0x8000..0xFF6A): Mapped when DPX (SFR 0x96) & 1 == 0
+        - Bank 1: 32,619 bytes (0xFF6B..0x17ED5 in file)
+            - Mapped to CPU 0x8000..0xFF6A when DPX (SFR 0x96) & 1 == 1
 
-        Bank 0 upper: file offset 0x8000-0xFFFF
-        Bank 1: file offset 0xFF6B + (addr - 0x8000)
+        Any access beyond the physical extent of Bank 0 (> 0xFF6A when DPX=0) or
+        Bank 1 (> 0xFF6A when DPX=1) explicitly returns unmapped flash value 0xFF.
         """
         addr &= 0xFFFF
 
-        # If accessing upper 32KB, check bank
         if addr >= 0x8000:
             dpx = self.sfr[self.SFR_DPX - 0x80]
             if dpx & 1:  # Bank 1
-                # Map 0x8000-0xFFFF to file offset 0xFF6B + offset
-                file_addr = self.BANK1_FILE_BASE + (addr - 0x8000)
-                if file_addr < len(self.code):
-                    return self.code[file_addr]
+                bank1_offset = addr - 0x8000
+                if bank1_offset < self.BANK1_SIZE:
+                    file_addr = self.BANK1_FILE_BASE + bank1_offset
+                    if file_addr < len(self.code):
+                        return self.code[file_addr]
+                return 0xFF
+            else:  # Bank 0 upper
+                if addr < self.BANK0_SIZE and addr < len(self.code):
+                    return self.code[addr]
                 return 0xFF
 
-        # Bank 0 or lower 32KB
+        # Bank 0 lower common 32KB (0x0000..0x7FFF)
         if addr < len(self.code):
             return self.code[addr]
         return 0xFF
@@ -211,7 +223,7 @@ class Memory:
         Bit addresses 0x80-0xFF: SFR bit-addressable registers
         """
         if bit_addr < 0x80:
-            # IDATA bit-addressable area (0x20-0x2F)
+            # IDATA bit-addressable area
             byte_addr = 0x20 + (bit_addr >> 3)
             bit_pos = bit_addr & 0x07
             return bool(self.idata[byte_addr] & (1 << bit_pos))
