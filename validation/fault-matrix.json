@@ -6,7 +6,10 @@
     "rtl_result": "BLOCKED: source absent",
     "expected_model_behavior": "normal boot fails",
     "confidence": "model-level only",
-    "evidence": "executed case in scripts/fault_matrix.py; generic profile assumptions in hardware/rev-a/board.json"
+    "evidence": "executed case in scripts/fault_matrix.py; generic profile assumptions in hardware/rev-a/board.json",
+    "source_class": "GENERIC_REFERENCE_FIRMWARE",
+    "hardware_touched": false,
+    "upstream_commit": "84c990c91eb41948649ead0b28d6720c31c434c3"
   },
   {
     "case": "corrupt reset/boot region",
@@ -15,7 +18,10 @@
     "rtl_result": "BLOCKED: source absent",
     "expected_model_behavior": "normal boot fails",
     "confidence": "model-level only",
-    "evidence": "executed case in scripts/fault_matrix.py; generic profile assumptions in hardware/rev-a/board.json"
+    "evidence": "executed case in scripts/fault_matrix.py; generic profile assumptions in hardware/rev-a/board.json",
+    "source_class": "GENERIC_REFERENCE_FIRMWARE",
+    "hardware_touched": false,
+    "upstream_commit": "84c990c91eb41948649ead0b28d6720c31c434c3"
   },
   {
     "case": "single-bit corruption",
@@ -24,7 +30,10 @@
     "rtl_result": "BLOCKED: source absent",
     "expected_model_behavior": "outcome depends on instruction affected; no hash enforcement",
     "confidence": "model-level only",
-    "evidence": "executed case in scripts/fault_matrix.py; generic profile assumptions in hardware/rev-a/board.json"
+    "evidence": "executed case in scripts/fault_matrix.py; generic profile assumptions in hardware/rev-a/board.json",
+    "source_class": "GENERIC_REFERENCE_FIRMWARE",
+    "hardware_touched": false,
+    "upstream_commit": "84c990c91eb41948649ead0b28d6720c31c434c3"
   },
   {
     "case": "invalid firmware hash",
@@ -33,7 +42,10 @@
     "rtl_result": "BLOCKED",
     "expected_model_behavior": "No hardware hash behavior inferred",
     "confidence": "explicit firmware scope",
-    "evidence": "reference/main.c"
+    "evidence": "reference/main.c",
+    "source_class": "GENERIC_REFERENCE_FIRMWARE",
+    "hardware_touched": false,
+    "upstream_commit": "84c990c91eb41948649ead0b28d6720c31c434c3"
   },
   {
     "case": "bad JEDEC ID",
@@ -42,7 +54,10 @@
     "rtl_result": "BLOCKED: source absent",
     "expected_model_behavior": "normal boot fails or read is interrupted",
     "confidence": "model-level only",
-    "evidence": "executed case in scripts/fault_matrix.py; generic profile assumptions in hardware/rev-a/board.json"
+    "evidence": "executed case in scripts/fault_matrix.py; generic profile assumptions in hardware/rev-a/board.json",
+    "source_class": "GENERIC_REFERENCE_FIRMWARE",
+    "hardware_touched": false,
+    "upstream_commit": "84c990c91eb41948649ead0b28d6720c31c434c3"
   },
   {
     "case": "flash stuck BUSY",
@@ -51,7 +66,10 @@
     "rtl_result": "BLOCKED: source absent",
     "expected_model_behavior": "normal boot fails or read is interrupted",
     "confidence": "model-level only",
-    "evidence": "executed case in scripts/fault_matrix.py; generic profile assumptions in hardware/rev-a/board.json"
+    "evidence": "executed case in scripts/fault_matrix.py; generic profile assumptions in hardware/rev-a/board.json",
+    "source_class": "GENERIC_REFERENCE_FIRMWARE",
+    "hardware_touched": false,
+    "upstream_commit": "84c990c91eb41948649ead0b28d6720c31c434c3"
   },
   {
     "case": "reset during flash access",
@@ -60,7 +78,10 @@
     "rtl_result": "BLOCKED: source absent",
     "expected_model_behavior": "normal boot fails or read is interrupted",
     "confidence": "model-level only",
-    "evidence": "executed case in scripts/fault_matrix.py; generic profile assumptions in hardware/rev-a/board.json"
+    "evidence": "executed case in scripts/fault_matrix.py; generic profile assumptions in hardware/rev-a/board.json",
+    "source_class": "GENERIC_REFERENCE_FIRMWARE",
+    "hardware_touched": false,
+    "upstream_commit": "84c990c91eb41948649ead0b28d6720c31c434c3"
   },
   {
     "case": "WREN ignored",
@@ -69,7 +90,10 @@
     "rtl_result": "BLOCKED: source absent",
     "expected_model_behavior": "programming rejected and data intact",
     "confidence": "model-level only",
-    "evidence": "executed case in scripts/fault_matrix.py; generic profile assumptions in hardware/rev-a/board.json"
+    "evidence": "executed case in scripts/fault_matrix.py; generic profile assumptions in hardware/rev-a/board.json",
+    "source_class": "GENERIC_REFERENCE_FIRMWARE",
+    "hardware_touched": false,
+    "upstream_commit": "84c990c91eb41948649ead0b28d6720c31c434c3"
   },
   {
     "case": "WEL unexpectedly cleared",
@@ -78,7 +102,10 @@
     "rtl_result": "BLOCKED: source absent",
     "expected_model_behavior": "programming rejected and data intact",
     "confidence": "model-level only",
-    "evidence": "executed case in scripts/fault_matrix.py; generic profile assumptions in hardware/rev-a/board.json"
+    "evidence": "executed case in scripts/fault_matrix.py; generic profile assumptions in hardware/rev-a/board.json",
+    "source_class": "GENERIC_REFERENCE_FIRMWARE",
+    "hardware_touched": false,
+    "upstream_commit": "84c990c91eb41948649ead0b28d6720c31c434c3"
   },
   {
     "case": "program interrupted",
@@ -87,7 +114,10 @@
     "rtl_result": "BLOCKED: source absent",
     "expected_model_behavior": "interruption produces partial data; external repair restores boot",
     "confidence": "model-level only",
-    "evidence": "executed case in scripts/fault_matrix.py; generic profile assumptions in hardware/rev-a/board.json"
+    "evidence": "executed case in scripts/fault_matrix.py; generic profile assumptions in hardware/rev-a/board.json",
+    "source_class": "GENERIC_REFERENCE_FIRMWARE",
+    "hardware_touched": false,
+    "upstream_commit": "84c990c91eb41948649ead0b28d6720c31c434c3"
   },
   {
     "case": "erase interrupted",
@@ -96,7 +126,10 @@
     "rtl_result": "BLOCKED: source absent",
     "expected_model_behavior": "interruption produces partial data; external repair restores boot",
     "confidence": "model-level only",
-    "evidence": "executed case in scripts/fault_matrix.py; generic profile assumptions in hardware/rev-a/board.json"
+    "evidence": "executed case in scripts/fault_matrix.py; generic profile assumptions in hardware/rev-a/board.json",
+    "source_class": "GENERIC_REFERENCE_FIRMWARE",
+    "hardware_touched": false,
+    "upstream_commit": "84c990c91eb41948649ead0b28d6720c31c434c3"
   },
   {
     "case": "reset during boot",
@@ -105,7 +138,10 @@
     "rtl_result": "BLOCKED: source absent",
     "expected_model_behavior": "CPU stops and later clean reset boots",
     "confidence": "model-level only",
-    "evidence": "executed case in scripts/fault_matrix.py; generic profile assumptions in hardware/rev-a/board.json"
+    "evidence": "executed case in scripts/fault_matrix.py; generic profile assumptions in hardware/rev-a/board.json",
+    "source_class": "GENERIC_REFERENCE_FIRMWARE",
+    "hardware_touched": false,
+    "upstream_commit": "84c990c91eb41948649ead0b28d6720c31c434c3"
   },
   {
     "case": "brownout",
@@ -114,7 +150,10 @@
     "rtl_result": "BLOCKED: source absent",
     "expected_model_behavior": "execution stops while unpowered, retained image boots after power-up",
     "confidence": "model-level only",
-    "evidence": "executed case in scripts/fault_matrix.py; generic profile assumptions in hardware/rev-a/board.json"
+    "evidence": "executed case in scripts/fault_matrix.py; generic profile assumptions in hardware/rev-a/board.json",
+    "source_class": "GENERIC_REFERENCE_FIRMWARE",
+    "hardware_touched": false,
+    "upstream_commit": "84c990c91eb41948649ead0b28d6720c31c434c3"
   },
   {
     "case": "rapid reset",
@@ -123,7 +162,10 @@
     "rtl_result": "BLOCKED: source absent",
     "expected_model_behavior": "clean final reset boots",
     "confidence": "model-level only",
-    "evidence": "executed case in scripts/fault_matrix.py; generic profile assumptions in hardware/rev-a/board.json"
+    "evidence": "executed case in scripts/fault_matrix.py; generic profile assumptions in hardware/rev-a/board.json",
+    "source_class": "GENERIC_REFERENCE_FIRMWARE",
+    "hardware_touched": false,
+    "upstream_commit": "84c990c91eb41948649ead0b28d6720c31c434c3"
   },
   {
     "case": "programmer attached too early",
@@ -132,7 +174,10 @@
     "rtl_result": "BLOCKED: source absent",
     "expected_model_behavior": "reject unsafe attachment",
     "confidence": "model-level only",
-    "evidence": "executed case in scripts/fault_matrix.py; generic profile assumptions in hardware/rev-a/board.json"
+    "evidence": "executed case in scripts/fault_matrix.py; generic profile assumptions in hardware/rev-a/board.json",
+    "source_class": "GENERIC_REFERENCE_FIRMWARE",
+    "hardware_touched": false,
+    "upstream_commit": "84c990c91eb41948649ead0b28d6720c31c434c3"
   },
   {
     "case": "programmer detached too late",
@@ -141,7 +186,10 @@
     "rtl_result": "BLOCKED: source absent",
     "expected_model_behavior": "reject premature CPU ownership",
     "confidence": "model-level only",
-    "evidence": "executed case in scripts/fault_matrix.py; generic profile assumptions in hardware/rev-a/board.json"
+    "evidence": "executed case in scripts/fault_matrix.py; generic profile assumptions in hardware/rev-a/board.json",
+    "source_class": "GENERIC_REFERENCE_FIRMWARE",
+    "hardware_touched": false,
+    "upstream_commit": "84c990c91eb41948649ead0b28d6720c31c434c3"
   },
   {
     "case": "ASM refuses to relinquish SPI",
@@ -150,7 +198,10 @@
     "rtl_result": "BLOCKED: source absent",
     "expected_model_behavior": "physical disconnection allows recovery",
     "confidence": "model-level only",
-    "evidence": "executed case in scripts/fault_matrix.py; generic profile assumptions in hardware/rev-a/board.json"
+    "evidence": "executed case in scripts/fault_matrix.py; generic profile assumptions in hardware/rev-a/board.json",
+    "source_class": "GENERIC_REFERENCE_FIRMWARE",
+    "hardware_touched": false,
+    "upstream_commit": "84c990c91eb41948649ead0b28d6720c31c434c3"
   },
   {
     "case": "ASM/programmer contention",
@@ -159,6 +210,9 @@
     "rtl_result": "BLOCKED: source absent",
     "expected_model_behavior": "detect a closed link during external access",
     "confidence": "model-level only",
-    "evidence": "executed case in scripts/fault_matrix.py; generic profile assumptions in hardware/rev-a/board.json"
+    "evidence": "executed case in scripts/fault_matrix.py; generic profile assumptions in hardware/rev-a/board.json",
+    "source_class": "GENERIC_REFERENCE_FIRMWARE",
+    "hardware_touched": false,
+    "upstream_commit": "84c990c91eb41948649ead0b28d6720c31c434c3"
   }
 ]

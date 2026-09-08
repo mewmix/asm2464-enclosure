@@ -1,0 +1,93 @@
+{
+  "code_reconstruction": {
+    "image_size": 98006,
+    "image_sha256": "1a4734745f0c00235754a00bd7e3e995064e1e6ae6f88a6aff163683a22d0037",
+    "source_class": "STOCK_CODE_ARTIFACT",
+    "expected_flash_profile": "stock_physical",
+    "simulator_commit": "32a0dc2844fd06ff102b5b027f0575a21fcbfeef",
+    "upstream_emulator_commit": "84c990c91eb41948649ead0b28d6720c31c434c3",
+    "physical_baseline_commit": "47aed2cd0fba21011b4f69ad34781e2c924b7f48",
+    "hardware_touched": false,
+    "status": "STOCK_CODE_EXECUTION_PROVEN_WITH_BOOT_ROM_BYPASSED",
+    "reset_vector_target": 17259,
+    "helper_range": [
+      53137,
+      53219
+    ],
+    "helper_instructions": 51,
+    "ordered_mmio_writes": [
+      [
+        45668,
+        8
+      ],
+      [
+        45669,
+        0
+      ],
+      [
+        45670,
+        8
+      ],
+      [
+        45671,
+        8
+      ],
+      [
+        45676,
+        8
+      ],
+      [
+        45677,
+        32
+      ],
+      [
+        45678,
+        8
+      ],
+      [
+        45679,
+        40
+      ],
+      [
+        45648,
+        0
+      ],
+      [
+        45649,
+        0
+      ],
+      [
+        52979,
+        8
+      ],
+      [
+        52978,
+        128
+      ],
+      [
+        52976,
+        0
+      ],
+      [
+        52975,
+        0
+      ],
+      [
+        51207,
+        4
+      ],
+      [
+        45697,
+        16
+      ]
+    ],
+    "evidence": "INSTRUCTION_PROVEN bytes; execution EMULATOR_MODEL_ONLY",
+    "bank1": "BLOCKED: upstream BANK1_FILE_BASE uses wrapper offset 0xFF6B after loader strips four-byte wrapper; body offset is 0xFF67. No local correction.",
+    "boot_rom": "UNMODELED",
+    "stock_storage_boot": "NOT_VALIDATED"
+  },
+  "full_spi": {
+    "status": "BLOCKED_STOCK_FULL_SPI_IMAGE_UNAVAILABLE",
+    "hardware_touched": false
+  }
+}

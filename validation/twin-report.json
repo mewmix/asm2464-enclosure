@@ -1,168 +1,154 @@
 {
-  "status": "CPU/CAD milestone PASS; full dual-backend milestone BLOCKED",
-  "board_config_sha256": "4119f42f19521ea654c7f155860678b76f4ef5dbd7819869f7d4c107a0395908",
-  "simulation": {
-    "cpu_boot": "PASS",
-    "cpu_brick": "PASS",
-    "cpu_recovery": "PASS",
+  "hardware_touched": false,
+  "fabrication_ready": false,
+  "board_config_sha256": "e52a2950c827ae685ee1128dd7065dec45bc32b176d243fcab274f061cbae5a2",
+  "stock": {
+    "code_reconstruction": {
+      "image_size": 98006,
+      "image_sha256": "1a4734745f0c00235754a00bd7e3e995064e1e6ae6f88a6aff163683a22d0037",
+      "source_class": "STOCK_CODE_ARTIFACT",
+      "expected_flash_profile": "stock_physical",
+      "simulator_commit": "32a0dc2844fd06ff102b5b027f0575a21fcbfeef",
+      "upstream_emulator_commit": "84c990c91eb41948649ead0b28d6720c31c434c3",
+      "physical_baseline_commit": "47aed2cd0fba21011b4f69ad34781e2c924b7f48",
+      "hardware_touched": false,
+      "status": "STOCK_CODE_EXECUTION_PROVEN_WITH_BOOT_ROM_BYPASSED",
+      "reset_vector_target": 17259,
+      "helper_range": [
+        53137,
+        53219
+      ],
+      "helper_instructions": 51,
+      "ordered_mmio_writes": [
+        [
+          45668,
+          8
+        ],
+        [
+          45669,
+          0
+        ],
+        [
+          45670,
+          8
+        ],
+        [
+          45671,
+          8
+        ],
+        [
+          45676,
+          8
+        ],
+        [
+          45677,
+          32
+        ],
+        [
+          45678,
+          8
+        ],
+        [
+          45679,
+          40
+        ],
+        [
+          45648,
+          0
+        ],
+        [
+          45649,
+          0
+        ],
+        [
+          52979,
+          8
+        ],
+        [
+          52978,
+          128
+        ],
+        [
+          52976,
+          0
+        ],
+        [
+          52975,
+          0
+        ],
+        [
+          51207,
+          4
+        ],
+        [
+          45697,
+          16
+        ]
+      ],
+      "evidence": "INSTRUCTION_PROVEN bytes; execution EMULATOR_MODEL_ONLY",
+      "bank1": "BLOCKED: upstream BANK1_FILE_BASE uses wrapper offset 0xFF6B after loader strips four-byte wrapper; body offset is 0xFF67. No local correction.",
+      "boot_rom": "UNMODELED",
+      "stock_storage_boot": "NOT_VALIDATED"
+    },
+    "full_spi": {
+      "status": "BLOCKED_STOCK_FULL_SPI_IMAGE_UNAVAILABLE",
+      "hardware_touched": false
+    }
+  },
+  "stock_route_provenance": "PASS_EXACT_PINNED_SOURCE",
+  "tests": {
+    "run": 32,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "expected_failures": 0,
+    "unexpected_successes": 0
+  },
+  "upstream_model_tests": {
+    "run": 19,
+    "exit_code": 0
+  },
+  "firmware_build": "BLOCKED_SDCC_UNAVAILABLE",
+  "generic_diagnostic": {
     "rtl": "BLOCKED: no RTL in pinned source",
     "differential": "BLOCKED: second execution backend absent",
-    "upstream_commit": "acc935d351d49c66ab8d1026ee8cb4617609f782",
-    "board_config_sha256": "4119f42f19521ea654c7f155860678b76f4ef5dbd7819869f7d4c107a0395908",
+    "upstream_commit": "84c990c91eb41948649ead0b28d6720c31c434c3",
+    "board_config_sha256": "e52a2950c827ae685ee1128dd7065dec45bc32b176d243fcab274f061cbae5a2",
     "firmware_sha256": "6206fae27da66d3d05e93093cb8e0721007614679fb7e4b583071f37db77f2a7",
     "flash_sha256": "318426eaeed2fde0bbe765457bf29b4f8fe5c7ea1a87909f38e28bd9bb842c82",
     "uart": "ASM2464 REF FW\nBUILD=68caac1a174a\nFLASH_ID=BA6015\nFLASH_STATUS=00\nBOOT=OK\n",
     "first_boot_instructions": 2344,
     "recovered_boot_instructions": 2344,
     "events": 3364,
-    "trace_sha256": "79450c03bb400c877f62621920d8840742ef1c1cf216294663961d7e161576f3",
+    "trace_sha256": "6f1e2ff7808f673f0c5710c2237ed59f1458cd4a58d36bd017df8a3fc92e7651",
     "physical_validation": "NOT PERFORMED",
-    "boot_rom": "unmodeled; uses authoritative explicit cold-load convention"
+    "boot_rom": "unmodeled; uses authoritative explicit cold-load convention",
+    "source_class": "GENERIC_REFERENCE_FIRMWARE",
+    "evidence": "EMULATOR_MODEL_ONLY",
+    "reference_artifact_upstream_commit": "acc935d351d49c66ab8d1026ee8cb4617609f782",
+    "build_mode": "preserved artifact replay; no fresh build",
+    "stock_compatibility": "NOT_TESTED",
+    "hardware_touched": false,
+    "generic_cpu_boot": "PASS",
+    "generic_cpu_brick": "PASS",
+    "generic_cpu_recovery": "PASS"
   },
-  "cad": {
-    "board_config_sha256": "4119f42f19521ea654c7f155860678b76f4ef5dbd7819869f7d4c107a0395908",
-    "geometry_valid": {
-      "base": true,
-      "lid": true,
-      "pcb_proxy": true,
-      "ssd_2230_proxy": true,
-      "thermal_insert": true,
-      "thermal_pad": true,
-      "flash_envelope": true,
-      "asm_package_envelope": true,
-      "service_connector_envelope": true,
-      "isolation_shunts_envelope": true,
-      "service_plug_keepout": true
-    },
-    "clearances": [
-      {
-        "parts": [
-          "base",
-          "flash_envelope"
-        ],
-        "intersection_mm3": 0.0,
-        "pass_check": true
-      },
-      {
-        "parts": [
-          "flash_envelope",
-          "ssd_2230_proxy"
-        ],
-        "intersection_mm3": 0.0,
-        "pass_check": true
-      },
-      {
-        "parts": [
-          "base",
-          "pcb_proxy"
-        ],
-        "intersection_mm3": 0.0,
-        "pass_check": true
-      },
-      {
-        "parts": [
-          "base",
-          "ssd_2230_proxy"
-        ],
-        "intersection_mm3": 0.0,
-        "pass_check": true
-      },
-      {
-        "parts": [
-          "lid",
-          "pcb_proxy"
-        ],
-        "intersection_mm3": 0.0,
-        "pass_check": true
-      },
-      {
-        "parts": [
-          "lid",
-          "service_connector_envelope"
-        ],
-        "intersection_mm3": 0.0,
-        "pass_check": true
-      },
-      {
-        "parts": [
-          "lid",
-          "isolation_shunts_envelope"
-        ],
-        "intersection_mm3": 0.0,
-        "pass_check": true
-      },
-      {
-        "parts": [
-          "lid",
-          "thermal_insert"
-        ],
-        "intersection_mm3": 0.0,
-        "pass_check": true
-      },
-      {
-        "parts": [
-          "lid",
-          "thermal_pad"
-        ],
-        "intersection_mm3": 0.0,
-        "pass_check": true
-      },
-      {
-        "parts": [
-          "lid",
-          "service_plug_keepout"
-        ],
-        "intersection_mm3": 0.0,
-        "pass_check": true
-      },
-      {
-        "parts": [
-          "thermal_insert",
-          "service_plug_keepout"
-        ],
-        "intersection_mm3": 0.0,
-        "pass_check": true
-      },
-      {
-        "parts": [
-          "thermal_pad",
-          "isolation_shunts_envelope"
-        ],
-        "intersection_mm3": 0.0,
-        "pass_check": true
-      },
-      {
-        "parts": [
-          "asm_package_envelope",
-          "service_connector_envelope"
-        ],
-        "intersection_mm3": 0.0,
-        "pass_check": true
-      },
-      {
-        "parts": [
-          "pcb_proxy",
-          "ssd_2230_proxy"
-        ],
-        "intersection_mm3": 0.0,
-        "pass_check": true
-      }
-    ],
-    "passed": true,
-    "limitations": [
-      "Component envelopes and stack heights are assumptions, not confirmed part dimensions.",
-      "No completed routed PCB, USB4 signal-integrity or physical thermal validation."
+  "generic_faults": {
+    "total": 18,
+    "passed": 17,
+    "unsupported": [
+      "invalid firmware hash"
     ]
   },
-  "deterministic_firmware": true,
-  "cpu_boot_repeatability": {
+  "generic_repeatability": {
     "classification": "timing-only difference",
     "equal": true
   },
-  "fault_cases": 18,
-  "unsupported": [
-    "invalid firmware hash"
-  ],
-  "rtl": "BLOCKED: no RTL files in authoritative source pin",
-  "fabrication_ready": false
+  "cad": {
+    "status": "BLOCKED_CADQUERY_UNAVAILABLE",
+    "historical_review": "mechanical/rev-a/review; not regenerated"
+  },
+  "rtl": "BLOCKED_SOURCE_ABSENT",
+  "differential": "BLOCKED_SECOND_EXECUTION_BACKEND_ABSENT",
+  "status": "OFFLINE_CONTRACTS_PASS_WITH_STOCK_STARTUP_AND_TOOLCHAIN_BLOCKERS"
 }
