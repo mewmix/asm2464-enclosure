@@ -1,0 +1,52 @@
+name: Offline ASM2464 co-simulation
+
+on:
+  push:
+    branches:
+      - agent/mandatory-asm-cosimulation
+  pull_request:
+
+jobs:
+  offline-cosim:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Verify pinned upstream import
+        run: |
+          python3 scripts/import_asm2464_sim.py
+          echo "d9f7a5157ec857b16eae1a3ee2d75f611293ac9b28cf5eb6eefd7b1b5cba3282  simulation/asm2464/upstream/emulate/memory.py" | sha256sum -c -
+
+      - name: Run offline co-simulation gates
+        run: |
+          set +e
+          python3 scripts/validate_twin.py --reference-bundle
+          rc=$?
+          set -e
+          test "$rc" -eq 2
+
+      - name: Verify bounded result
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('validation/twin-report.json').read_text())
+          assert r['hardware_touched'] is False
+          assert r['status']=='OFFLINE_CONTRACTS_PASS_WITH_STOCK_STARTUP_AND_TOOLCHAIN_BLOCKERS'
+          assert r['tests']['failures']==0 and r['tests']['errors']==0
+          assert r['upstream_model_tests']['exit_code']==0
+          assert r['stock']['code_reconstruction']['status']=='BLOCKED_STOCK_CODE_ARTIFACT_UNAVAILABLE'
+          assert r['stock']['full_spi']['status']=='BLOCKED_STOCK_FULL_SPI_IMAGE_UNAVAILABLE'
+          assert r['rtl']=='BLOCKED_SOURCE_ABSENT'
+          assert r['differential']=='BLOCKED_SECOND_EXECUTION_BACKEND_ABSENT'
+          print(json.dumps({
+              'status':r['status'],
+              'tests':r['tests'],
+              'upstream_model_tests':r['upstream_model_tests'],
+              'generic_faults':r.get('generic_faults'),
+              'firmware_build':r.get('firmware_build'),
+              'cad':r.get('cad'),
+              'hardware_touched':r['hardware_touched'],
+          },indent=2))
+          PY
