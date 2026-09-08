@@ -124,7 +124,7 @@ class Memory:
         self.idata[addr] = value
 
     # Known DMA/timer sync flag addresses that need auto-clear when polled
-    # These flags are set by firmware and should be cleared by DMA/timer completion
+    # These are RAM flags that firmware sets and waits for hardware to clear
     SYNC_FLAG_ADDRS = {0x1238}  # Timer/DMA sync flag at 0x1238
     SYNC_FLAG_CLEAR_AFTER = 5   # Clear after this many polls
 
