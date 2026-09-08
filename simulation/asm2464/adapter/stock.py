@@ -33,11 +33,27 @@ def execute_code(data):
         raise ValueError('stock code artifact hash/size mismatch')
     b=Board(flash_profile='stock_physical');backend=CpuBackend(b);backend.prepare()
     backend.memory.code[:]=b'\xff'*len(backend.memory.code)
-    backend.memory.load_firmware(data);backend.cpu.reset()
+    backend.memory.load_firmware(data)
+
+    # Pin the merged upstream bank-coordinate contract without claiming that
+    # reset/boot reaches a bank-one callsite.  0xFF reads in the absent tail are
+    # emulator fail-closed policy, not physical boot-ROM evidence.
+    dpx_index=backend.memory.SFR_DPX-0x80
+    backend.memory.sfr[dpx_index]=0
+    if backend.memory.read_code(0xFF6A)!=data[0xFF6A] or backend.memory.read_code(0xFF6B)!=0xFF:
+        raise AssertionError('stock bank-zero extent mismatch')
+    backend.memory.sfr[dpx_index]=1
+    if (backend.memory.read_code(0x8000)!=data[0xFF6B] or
+        backend.memory.read_code(0xFF6A)!=data[-1] or
+        backend.memory.read_code(0xFF6B)!=0xFF or
+        backend.memory.read_code(0xFFFF)!=0xFF):
+        raise AssertionError('stock bank-one mapping/extent mismatch')
+    backend.memory.sfr[dpx_index]=0
+
+    backend.cpu.reset()
     backend.cpu.step()
     if backend.cpu.pc!=0x436B:raise AssertionError('stock reset LJMP mismatch')
     # Execute exact bank-zero helper up to its RET, without synthesizing a caller.
-    # No bank-one offset correction or omitted callee synthesis is introduced.
     backend.cpu.pc=0xCF91;start=len(b.events);count=0
     while backend.cpu.pc!=0xCFE3 and count<128:
         if not 0xCF91<=backend.cpu.pc<0xCFE3:raise AssertionError('helper escaped')
@@ -54,7 +70,11 @@ def execute_code(data):
                   reset_vector_target=0x436B,helper_range=[0xCF91,0xCFE3],
                   helper_instructions=count,ordered_mmio_writes=writes,
                   evidence='INSTRUCTION_PROVEN bytes; execution EMULATOR_MODEL_ONLY',
-                  bank1='BLOCKED: upstream BANK1_FILE_BASE uses wrapper offset 0xFF6B after loader strips four-byte wrapper; body offset is 0xFF67. No local correction.',
+                  bank1='UPSTREAM_MAPPING_PROVEN: body/file 0xFF6B maps CPU 0x8000; present artifact extent maps through CPU 0xFF6A; absent 0xFF6B..0xFFFF tail returns model-policy 0xFF',
+                  bank_mapping='STOCK_BYTES_AND_INSTRUCTION_PROVEN_UPSTREAM',
+                  controller_identify_reachability='STOCK_INSTRUCTION_AND_DATAFLOW_PROVEN_UPSTREAM',
+                  namespace_identify_reachability='UNPROVEN',
+                  banked_startup='NOT_VALIDATED',
                   boot_rom='UNMODELED',stock_storage_boot='NOT_VALIDATED')
     return result
 
