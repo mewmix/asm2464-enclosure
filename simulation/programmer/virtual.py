@@ -22,7 +22,10 @@ class Programmer:
         self.command(0x06);self.command(opcode,address=address);self.wait()
     def install(self,image):
         if len(image)!=self.board.config['flash']['capacity']: raise ValueError('require full flash image')
-        if self.command(0x9f,length=3)!=bytes.fromhex(self.board.config['flash']['jedec_hex']): raise ValueError('wrong JEDEC ID')
+        jedec=self.board.config['flash']['jedec_hex']
+        if jedec is None:
+            self.board.emit('JEDEC_VALIDATION_UNAVAILABLE',evidence='UNKNOWN')
+        elif self.command(0x9f,length=3)!=bytes.fromhex(jedec): raise ValueError('wrong JEDEC ID')
         backup=self.read(0,len(image));self.board.emit('BACKUP_HASH',sha256=hashlib.sha256(backup).hexdigest())
         self.erase()
         page=self.board.config['flash']['page_size']

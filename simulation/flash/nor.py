@@ -37,7 +37,9 @@ class NorFlash:
         if opcode==0x05:
             status=self.status(); self.emit('FLASH_STATUS',value=status); return bytes([status])*length
         if self.status()&1: raise FlashError('command while BUSY')
-        if opcode==0x9f: return (b'\0\0\0' if 'bad_jedec' in self.faults else bytes.fromhex(self.cfg['jedec_hex']))[:length]
+        if opcode==0x9f:
+            if self.cfg['jedec_hex'] is None: raise FlashError('JEDEC ID UNKNOWN for selected profile')
+            return (b'\0\0\0' if 'bad_jedec' in self.faults else bytes.fromhex(self.cfg['jedec_hex']))[:length]
         if opcode==0x06:
             self.wel='wren_ignored' not in self.faults; self.emit('FLASH_WREN',wel=self.wel); return b''
         if opcode==0x04: self.wel=False; self.emit('FLASH_WRDI'); return b''

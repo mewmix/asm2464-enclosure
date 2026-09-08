@@ -2,6 +2,8 @@
   "revision": "rev-a-digital-twin-1",
   "status": "PROVISIONAL: fit model and digital simulation, not fabrication-ready",
   "reference_commit": "8b7a5b2e510b9e8b6a98e5ba4e491064da3b950c",
+  "default_flash_profile": "rev_a_candidate",
+  "stock_compatibility_flash_profile": "stock_physical",
   "flash": {
     "part": "ZD25WQ16-style",
     "capacity": 2097152,
@@ -13,12 +15,12 @@
     "sector_erase_ticks": 300,
     "block_erase_ticks": 1200,
     "chip_erase_ticks": 2400,
-    "evidence": "ASSUMED generic 16-Mbit SPI NOR profile; exact ZD suffix, JEDEC and timing must be verified. Ticks are deterministic simulation units, not measured microseconds."
+    "evidence": "REV_A_DESIGN_ASSUMPTION; not stock-equivalent. Exact ZD suffix, JEDEC and timing unverified. Upper 1.5 MiB controller support UNKNOWN. Ticks are deterministic model units."
   },
   "boot": {
     "flash_offset": 256,
     "code_address": 0,
-    "evidence": "upstream emulate/emu.py load_firmware_from_spi offset=0x100; CPU8051.reset PC=0"
+    "evidence": "GENERIC_REFERENCE_FIRMWARE manifest-owned layout only. Stock boot ROM and SPI-to-CODE loading are not modeled. CPU8051.reset PC=0 is EMULATOR_MODEL_ONLY."
   },
   "recovery": {
     "mechanism": "four_removable_shunts",
