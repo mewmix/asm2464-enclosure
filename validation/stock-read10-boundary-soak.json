@@ -1,0 +1,82 @@
+{
+  "authoritative_semantics_changed": false,
+  "boundary_replay": {
+    "classification": "NON_AUTHORITATIVE_STATE_REPLAY_AGAINST_PINNED_ENCLOSURE_BACKEND",
+    "event_arrives_while_in_isr": {
+      "after_64_ticks_in_isr": {
+        "controller_event_pending": false,
+        "ext0_pending": true
+      },
+      "after_isr_exit_tick": {
+        "controller_event_pending": false,
+        "ext0_pending": true
+      }
+    },
+    "explicit_event_bridge": {
+      "controller_event_pending_after_delivery": false,
+      "ext0_latched": true
+    },
+    "fixture_low_ram": {
+      "0x06E2": 1,
+      "0x06E3": 1,
+      "0x06E4": 1,
+      "0x06E5": 0
+    },
+    "fixture_mmio": {
+      "0x9101": 64,
+      "0x9102": 0,
+      "0xB251": 1,
+      "0xB254": 3,
+      "0xB284": 1,
+      "0xB294": 0,
+      "0xB296": 2,
+      "0xC800": 5,
+      "0xC802": 1,
+      "0xC80A": 0
+    },
+    "fixture_phase": "read10_idle_after_06e3",
+    "idle_ticks_requested": 1000000,
+    "pass": true,
+    "spontaneous_ext0_from_persistent_snapshot": false,
+    "spontaneous_ext0_tick": null
+  },
+  "enclosure_commit": "842896deb99e394002307217089f7f4c51c01ed7",
+  "enclosure_pinned_upstream_emulator_commit": "da87259d6bc0e2b86ff8bd0deb22938bd9fa89d7",
+  "evidence_classification": {
+    "kind": "ENCLOSURE_MODEL_STRESS_AGAINST_IMPORTED_PASSIVE_TRACE",
+    "purpose": "INDEPENDENT_SOAK_AND_INTERRUPT_DELIVERY_SENSITIVITY",
+    "stock_firmware_execution_in_this_lane": false
+  },
+  "generation_churn": {
+    "cycles_completed": 256,
+    "cycles_requested": 256,
+    "downstream_generation": 256,
+    "failures": [],
+    "pass": true,
+    "rejected_stale_completions": 256
+  },
+  "hardware_touched": false,
+  "healthy_q1_soak": {
+    "board_generation": 0,
+    "failures": [],
+    "iterations_completed": 25000,
+    "iterations_requested": 25000,
+    "pass": true,
+    "q1_owner_stable": true,
+    "rejected_completion_count": 0,
+    "submission_history_delta": 25000
+  },
+  "physical_evidence_claimed": false,
+  "schema": 1,
+  "source_trace": {
+    "artifact_id": 10121241850,
+    "artifact_zip_sha256": "c4fd8d3fdc475e54bc77b7ab81919a9c49b01e6c82b3f0a5cf2a58f725290c57",
+    "branch": "agent/stock-reset-to-identify",
+    "commit": "b1e4d4d4387a2d2c7a19c42da6157f1b92e2cfc1",
+    "fixture_path": "simulation/fixtures/opal-b1e4d4d-stock-read10-pio-irq.json",
+    "payload_sha256": "72ee03699bd595ef0231467507af4b74f1acc542e2b23ba5aad2eaf47b8071cf",
+    "repository": "mewmix/asm2464pd-opal",
+    "workflow_run": 34395095064
+  },
+  "verdict": "ENCLOSURE_STOCK_READ10_BOUNDARY_SOAK_COMPLETED"
+}
