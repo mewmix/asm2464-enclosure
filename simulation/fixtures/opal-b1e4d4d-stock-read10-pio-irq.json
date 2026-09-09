@@ -1,0 +1,149 @@
+{
+  "schema": 2,
+  "verdict": "STOCK_READ10_PIO_IRQ_BOUNDARY_INCOMPLETE",
+  "hardware_touched": false,
+  "physical_evidence_claimed": false,
+  "boot_rom": "UNMODELED_BYPASSED_BY_DIRECT_COMMITTED_FW_BIN_LOAD",
+  "firmware": {
+    "size": 98006,
+    "sha256": "1a4734745f0c00235754a00bd7e3e995064e1e6ae6f88a6aff163683a22d0037"
+  },
+  "queue1_media_frontier_verdict": "STOCK_QUEUE1_MEDIA_GATE_FRONTIER_REACHED",
+  "pre_read_bot_rearm": {
+    "already_idle": false,
+    "initial_transfer_count": 5,
+    "csw_index": 6,
+    "host_completed_csw": true,
+    "idle_pc": "0x1FBA",
+    "idle_bank": 0,
+    "instructions": 3295,
+    "cbw_armed": true,
+    "pending_usb_interrupt": false,
+    "ext0_pending": false
+  },
+  "facts": {
+    "pio_history_records_after_read": 1,
+    "pio_completion_seen": false,
+    "b296_completion_06_seen": true,
+    "b296_06_to_02_seen": false,
+    "c800_transition_count": 0,
+    "c80a_transition_count": 0,
+    "c800_final": 5,
+    "c80a_final": 0,
+    "stock_06e3_set": true,
+    "reti_after_06e3_seen": false,
+    "ext0_pending_before_reti_after_06e3": null,
+    "reti_immediately_reentered_ext0": false,
+    "ext0_accept_count_after_read": 0,
+    "ext0_accept_count_after_06e3": 0,
+    "io_submission_count_after_read": 0
+  },
+  "pio_completion_events": [],
+  "b296_transitions": [],
+  "b296_06_to_02_events": [],
+  "c800_transitions": [],
+  "c80a_transitions": [],
+  "reti_after_06e3": null,
+  "ext0_accepts_after_read": [],
+  "ext0_accepts_after_06e3": [],
+  "idle_after_06e3": {
+    "phase": "read10_idle_after_06e3",
+    "instruction_count": 3188495,
+    "cycles": 5416395,
+    "pc": "0x202A",
+    "bank": 0,
+    "opcode": 144,
+    "cpu": {
+      "in_interrupt": false,
+      "ext0_pending": false
+    },
+    "sfr": {
+      "IE": 133,
+      "IP": 0,
+      "TCON": 0,
+      "SP": 114,
+      "CODE_BANK": 0
+    },
+    "low_ram": {
+      "0x06E2": 1,
+      "0x06E3": 1,
+      "0x06E4": 1,
+      "0x06E5": 0
+    },
+    "mmio": {
+      "0xB251": 1,
+      "0xB254": 3,
+      "0xB284": 1,
+      "0xB294": 0,
+      "0xB296": 2,
+      "0xC800": 5,
+      "0xC802": 1,
+      "0xC80A": 0,
+      "0x9101": 64,
+      "0x9102": 0
+    },
+    "hardware": {
+      "pending_usb_interrupt": false,
+      "usb_cmd_pending": false,
+      "usb_intflags": 0,
+      "usb_intstatus": 0,
+      "pio_completion_read": false,
+      "pio_history_len": 18,
+      "b254_log_len": 389,
+      "io_submission_count": 0
+    }
+  },
+  "event_sequence": [],
+  "final": {
+    "phase": "read10_pio_irq_final",
+    "instruction_count": 3238495,
+    "cycles": 5502399,
+    "pc": "0x5277",
+    "bank": 0,
+    "opcode": 84,
+    "cpu": {
+      "in_interrupt": false,
+      "ext0_pending": false
+    },
+    "sfr": {
+      "IE": 133,
+      "IP": 0,
+      "TCON": 0,
+      "SP": 116,
+      "CODE_BANK": 0
+    },
+    "low_ram": {
+      "0x06E2": 1,
+      "0x06E3": 1,
+      "0x06E4": 1,
+      "0x06E5": 0
+    },
+    "mmio": {
+      "0xB251": 1,
+      "0xB254": 3,
+      "0xB284": 1,
+      "0xB294": 0,
+      "0xB296": 2,
+      "0xC800": 5,
+      "0xC802": 1,
+      "0xC80A": 0,
+      "0x9101": 64,
+      "0x9102": 0
+    },
+    "hardware": {
+      "pending_usb_interrupt": false,
+      "usb_cmd_pending": false,
+      "usb_intflags": 0,
+      "usb_intstatus": 0,
+      "pio_completion_read": false,
+      "pio_history_len": 18,
+      "b254_log_len": 389,
+      "io_submission_count": 0
+    }
+  },
+  "evidence_classification": {
+    "kind": "PASSIVE_EMULATOR_EXECUTION_OF_COMMITTED_STOCK_BYTES",
+    "purpose": "DISTINGUISH_PIO_COMPLETION_EVENT_FROM_EX0_LEVEL_RELATCH",
+    "no_controller_irq_semantics_modified": true
+  }
+}
