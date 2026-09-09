@@ -1,0 +1,77 @@
+name: Stock READ10 enclosure boundary soak
+
+on:
+  push:
+    branches:
+      - agent/mandatory-asm-cosimulation
+    paths:
+      - 'scripts/stock_read10_boundary_soak.py'
+      - 'simulation/fixtures/opal-b1e4d4d-stock-read10-pio-irq.json'
+      - 'simulation/asm2464/**'
+      - 'simulation/board/**'
+      - '.github/workflows/stock-read10-boundary-soak.yml'
+  pull_request:
+    paths:
+      - 'scripts/stock_read10_boundary_soak.py'
+      - 'simulation/fixtures/opal-b1e4d4d-stock-read10-pio-irq.json'
+      - 'simulation/asm2464/**'
+      - 'simulation/board/**'
+      - '.github/workflows/stock-read10-boundary-soak.yml'
+
+jobs:
+  boundary-soak:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out enclosure simulation branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify pinned enclosure emulator import
+        run: python3 scripts/import_asm2464_sim.py
+
+      - name: Run READ10 boundary and Queue1 soak
+        shell: bash
+        run: |
+          set +e
+          python3 scripts/stock_read10_boundary_soak.py \
+            --iterations 25000 \
+            --churn-cycles 256 \
+            --idle-ticks 1000000
+          rc=$?
+          set -e
+          echo "SOAK_RC=$rc" >> "$GITHUB_ENV"
+
+      - name: Upload soak evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stock-read10-enclosure-boundary-soak
+          path: validation/stock-read10-boundary-soak.json
+          if-no-files-found: error
+
+      - name: Enforce evidence boundaries and soak result
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('validation/stock-read10-boundary-soak.json').read_text())
+          assert r['hardware_touched'] is False
+          assert r['physical_evidence_claimed'] is False
+          assert r['authoritative_semantics_changed'] is False
+          assert r['source_trace']['commit']=='b1e4d4d4387a2d2c7a19c42da6157f1b92e2cfc1'
+          assert r['evidence_classification']['stock_firmware_execution_in_this_lane'] is False
+          assert r['boundary_replay']['spontaneous_ext0_from_persistent_snapshot'] is False
+          assert r['boundary_replay']['explicit_event_bridge']['ext0_latched'] is True
+          assert r['healthy_q1_soak']['pass'] is True
+          assert r['generation_churn']['pass'] is True
+          assert r['verdict']=='ENCLOSURE_STOCK_READ10_BOUNDARY_SOAK_COMPLETED'
+          print(json.dumps({
+              'verdict':r['verdict'],
+              'boundary_replay':r['boundary_replay'],
+              'healthy_q1_soak':r['healthy_q1_soak'],
+              'generation_churn':r['generation_churn'],
+              'hardware_touched':r['hardware_touched'],
+          },indent=2))
+          PY
+          test "${SOAK_RC:-99}" -eq 0
