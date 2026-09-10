@@ -1,8 +1,8 @@
 """Evidence-bound board routing/topology model.
 
-This module intentionally models only facts and constraints that are supported by
-repository evidence. It does not synthesize USB4/PCIe copper geometry, impedance,
-via counts, or skew values when those inputs are unresolved.
+This module intentionally models only facts and constraints supported by repository
+evidence. Reference-board topology is checked separately from Rev-A copper geometry:
+a recovered reference path does not make the new board routed or fabrication-ready.
 """
 from __future__ import annotations
 
@@ -13,6 +13,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 ROUTING_PATH = ROOT / "hardware/rev-a/routing.json"
+REFERENCE_XREF_PATH = ROOT / "reference/leaves232-b2/high-speed-routing-xref.json"
 
 EXPECTED_ASM_BALLS = {
     "ASM_UART_TX": "B21",
@@ -34,10 +35,21 @@ EXPECTED_SERVICE_PINS = {
 }
 SPI_NETS = {"ASM_SPI_CS_N", "ASM_SPI_CLK", "ASM_SPI_DI", "ASM_SPI_DO"}
 HIGH_SPEED_DOMAINS = {"USB4", "PCIE"}
+EXPECTED_REFERENCE_PAIRS = {
+    "UD",
+    "UTX0", "UTX0_CON", "UTX1", "UTX1_CON",
+    "URX0", "URX0_CON", "URX1", "URX1_CON",
+    "PET0", "PET0U", "PET1", "PET1U", "PET2", "PET2U", "PET3", "PET3U",
+    "PER0", "PER1", "PER2", "PER3", "RefCLK",
+}
 
 
 def load(path: Path | None = None) -> dict:
     return json.loads((path or ROUTING_PATH).read_text())
+
+
+def load_reference_xref(path: Path | None = None) -> dict:
+    return json.loads((path or REFERENCE_XREF_PATH).read_text())
 
 
 def sha256(path: Path | None = None) -> str:
@@ -58,8 +70,62 @@ def chord_mm(contract: dict, a: str, b: str) -> float:
     return math.hypot(ax - bx, ay - by)
 
 
-def validate(contract: dict | None = None) -> dict:
+def _validate_reference_xref(xref: dict, errors: list[str], warnings: list[str]) -> None:
+    if xref.get("pair_membership_evidence") != "ALTIUM_DIFFERENTIALPAIRS6":
+        errors.append("reference differential-pair membership is not source-native Altium evidence")
+    if xref.get("source", {}).get("pcbdoc_sha256") != "641ef37a898217b3b2591e653d212322ea6044bb661b0b2a267a3ef24dfb8d93":
+        errors.append("reference PcbDoc hash drifted from the pinned B2 source")
+
+    pairs = {p.get("name"): p for p in xref.get("pairs", [])}
+    missing = EXPECTED_REFERENCE_PAIRS - set(pairs)
+    extra = set(pairs) - EXPECTED_REFERENCE_PAIRS
+    if missing:
+        errors.append(f"reference xref missing differential pairs: {sorted(missing)}")
+    if extra:
+        warnings.append(f"reference xref has additional differential pairs: {sorted(extra)}")
+
+    for name in EXPECTED_REFERENCE_PAIRS & set(pairs):
+        p = pairs[name]
+        if not p.get("positive_endpoints") or not p.get("negative_endpoints"):
+            errors.append(f"reference pair {name} has unresolved converted endpoints")
+        if p.get("native_user_routed") != "TRUE":
+            warnings.append(f"reference pair {name} is not marked USERROUTED=TRUE in DifferentialPairs6")
+
+    topo = {d.get("domain"): d for d in xref.get("reference_topology", [])}
+    usb2 = topo.get("USB2", {})
+    if usb2.get("logical_link") != "USBC1<->U2":
+        errors.append("reference USB2 topology must resolve USBC1<->U2")
+
+    usb4 = topo.get("USB4", {})
+    if usb4.get("logical_link") != "USBC1<->U2":
+        errors.append("reference USB4 topology must resolve USBC1<->U2")
+    usb4_names = {p.get("logical_pair") for p in usb4.get("split_pairs", [])}
+    if usb4_names != {"UTX0", "UTX1", "URX0", "URX1"}:
+        errors.append("reference USB4 split-pair topology is incomplete")
+    for p in usb4.get("split_pairs", []):
+        if len(p.get("positive_shared_components", [])) != 1 or len(p.get("negative_shared_components", [])) != 1:
+            errors.append(f"reference USB4 pair {p.get('logical_pair')} does not resolve one P/N coupling component per polarity")
+
+    pcie = topo.get("PCIE", {})
+    if pcie.get("logical_link") != "U2<->CN1":
+        errors.append("reference PCIe topology must resolve U2<->CN1")
+    tx_lanes = {p.get("lane") for p in pcie.get("tx_split_pairs", [])}
+    rx_lanes = {p.get("lane") for p in pcie.get("rx_pairs", [])}
+    if tx_lanes != {0, 1, 2, 3}:
+        errors.append("reference PCIe TX topology does not contain lanes 0..3")
+    if rx_lanes != {0, 1, 2, 3}:
+        errors.append("reference PCIe RX topology does not contain lanes 0..3")
+    if pcie.get("reference_clock", {}).get("pair") != "RefCLK":
+        errors.append("reference PCIe RefCLK pair is unresolved")
+
+    caveats = " ".join(xref.get("caveats", []))
+    if "not electrical skew" not in caveats:
+        errors.append("reference xref must explicitly reject interpreting converted segment delta as skew")
+
+
+def validate(contract: dict | None = None, reference_xref: dict | None = None) -> dict:
     c = contract or load()
+    xref = reference_xref or load_reference_xref()
     errors: list[str] = []
     warnings: list[str] = []
 
@@ -122,12 +188,11 @@ def validate(contract: dict | None = None) -> dict:
         if not d:
             errors.append(f"missing high-speed domain {domain}")
             continue
-        blocked = str(d.get("topology_status", "")).startswith("BLOCKED_")
         metrics = d.get("actual_metrics", {})
-        if blocked and any(value is not None for value in metrics.values()):
-            errors.append(f"{domain} has fabricated route metrics while topology is unresolved")
-        if blocked and d.get("geometry_status") != "UNROUTED":
-            errors.append(f"{domain} cannot claim routed geometry before exact net-map extraction")
+        if d.get("geometry_status") == "UNROUTED" and any(value is not None for value in metrics.values()):
+            errors.append(f"{domain} has claimed route metrics while Rev-A geometry is UNROUTED")
+        if d.get("geometry_status") != "UNROUTED" and str(d.get("topology_status", "")).startswith("BLOCKED_"):
+            errors.append(f"{domain} cannot claim routed geometry while topology remains blocked")
         constraints = set(d.get("constraints", []))
         for required in (
             "STACKUP_REQUIRED_BEFORE_TRACE_WIDTH_OR_GAP",
@@ -138,6 +203,8 @@ def validate(contract: dict | None = None) -> dict:
         ):
             if required not in constraints:
                 errors.append(f"{domain} missing routing constraint {required}")
+
+    _validate_reference_xref(xref, errors, warnings)
 
     lower_bounds = {}
     for key, endpoints in {
@@ -155,6 +222,8 @@ def validate(contract: dict | None = None) -> dict:
         "errors": errors,
         "warnings": warnings,
         "routing_sha256": sha256() if contract is None else None,
+        "reference_pair_count": len(xref.get("pairs", [])),
+        "reference_topology_domains": [d.get("domain") for d in xref.get("reference_topology", [])],
         "placement_chord_lower_bounds_mm": lower_bounds,
-        "note": "Chord values are geometric lower bounds, not routed trace lengths.",
+        "note": "Chord values are geometric lower bounds, not routed trace lengths; reference converted segment deltas are not electrical skew.",
     }
