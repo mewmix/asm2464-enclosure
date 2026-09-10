@@ -1,5 +1,5 @@
 {
-  "revision": "rev-a-routing-contract-3",
+  "revision": "rev-a-routing-contract-4",
   "status": "PROVISIONAL_CONSTRAINT_MODEL_NOT_FABRICATION_READY",
   "source_board_revision": "rev-a-digital-twin-1",
   "board_outline_mm": {
@@ -29,6 +29,18 @@
     "endpoint_evidence": "DIAGNOSTIC_ALTIUM2KICAD_PAD_NET_JOIN",
     "status": "REFERENCE_TOPOLOGY_RECOVERED"
   },
+  "reference_source_native_geometry": {
+    "source": "reference/leaves232-b2/source-native-routing-geometry.json",
+    "status": "REFERENCE_GEOMETRY_ONLY_NOT_REV_A_TARGETS",
+    "high_speed_net_count": 44,
+    "high_speed_arc_count": 416,
+    "source_pcb_sha256": "641ef37a898217b3b2591e653d212322ea6044bb661b0b2a267a3ef24dfb8d93",
+    "straight_geometry_crosscheck_max_delta_mm": 0.000027,
+    "via_count_crosscheck_max_delta": 0,
+    "reference_widths_mm": [0.08128, 0.110744],
+    "fabrication_netlist_status": "NO_IPC356_OR_EQUIVALENT_NET_ASSOCIATED_FAB_NETLIST_FOUND",
+    "interpretation": "Source-native Tracks6/Arcs6/Vias6 provide reference geometry; converted KiCad independently corroborates straight lengths and via counts. These values do not define Rev-A production geometry."
+  },
   "components": {
     "ASM2464PD": {"refdes": "U2", "center_mm": [13.6672574, 14.8704808], "placement_evidence": "FAB_OUTPUT"},
     "SPI_FLASH": {"refdes": "U31", "part": "ZD25WQ16CEIGR", "center_mm": [20.9301842, 20.2771502], "placement_evidence": "FAB_OUTPUT", "pinout_status": "BLOCKED_AUTHORITATIVE_FLASH_DATASHEET"},
@@ -56,8 +68,17 @@
       "topology_status": "REFERENCE_TOPOLOGY_RECOVERED_REV_A_NETS_PENDING",
       "reference_topology": ["UTX0", "UTX0_CON", "UTX1", "UTX1_CON", "URX0", "URX0_CON", "URX1", "URX1_CON"],
       "geometry_status": "UNROUTED",
-      "evidence": "REFERENCE_PCB_PLUS_CONVERTED_ENDPOINT_XREF",
+      "evidence": "REFERENCE_PCB_PLUS_SOURCE_NATIVE_GEOMETRY",
       "reference_profile": {"diff_impedance_ohms_approx": 85, "layers": ["top", "bottom"], "stackup_code": "04161H02-1080", "evidence": "REFERENCE_PCB"},
+      "observed_reference_geometry": {
+        "source": "reference/leaves232-b2/source-native-routing-geometry.json",
+        "transfer_status": "REFERENCE_GEOMETRY_ONLY_NOT_REV_A_TARGETS",
+        "conductor_centerline_range_mm": [8.221736, 10.369975],
+        "pair_centerline_delta_range_mm": [0.005645, 0.074974],
+        "matched_via_count_options": [[0, 0], [2, 2]],
+        "widths_mm": [0.08128, 0.110744],
+        "metric_note": "Centerline delta is geometric copper difference, not electrical timing skew."
+      },
       "constraints": ["STACKUP_REQUIRED_BEFORE_TRACE_WIDTH_OR_GAP", "TARGET_DIFFERENTIAL_IMPEDANCE_REQUIRED", "CONTINUOUS_REFERENCE_PLANE", "TRACK_INTRA_PAIR_SKEW", "TRACK_INTER_PAIR_SKEW_WHERE_APPLICABLE", "MINIMIZE_VIAS_AND_STUBS", "AVOID_RETURN_PATH_DISCONTINUITIES", "KEEP_AWAY_FROM_SWITCH_NODE_NOISE", "NO_DEBUG_STUBS"],
       "actual_metrics": {"trace_length_mm": null, "pair_skew_mm": null, "via_count": null, "target_diff_ohms": null}
     },
@@ -66,8 +87,17 @@
       "topology_status": "REFERENCE_TOPOLOGY_RECOVERED_REV_A_NETS_PENDING",
       "reference_topology": {"tx": ["PET0", "PET0U", "PET1", "PET1U", "PET2", "PET2U", "PET3", "PET3U"], "rx": ["PER0", "PER1", "PER2", "PER3"], "clock": ["RefCLK"]},
       "geometry_status": "UNROUTED",
-      "evidence": "REFERENCE_PCB_PLUS_CONVERTED_ENDPOINT_XREF",
+      "evidence": "REFERENCE_PCB_PLUS_SOURCE_NATIVE_GEOMETRY",
       "reference_profile": {"diff_impedance_ohms_approx": 85, "layers": ["top", "bottom"], "stackup_code": "04161H02-1080", "evidence": "REFERENCE_PCB", "scope_note": "Reference README states top/bottom differential routing should be about 85 ohm; exact Rev-A geometry still requires a selected fabricator stackup/field-solver result."},
+      "observed_reference_geometry": {
+        "source": "reference/leaves232-b2/source-native-routing-geometry.json",
+        "transfer_status": "REFERENCE_GEOMETRY_ONLY_NOT_REV_A_TARGETS",
+        "conductor_centerline_range_mm": [9.82449, 37.750298],
+        "pair_centerline_delta_range_mm": [0.024424, 0.426121],
+        "matched_via_count_options": [[1, 1]],
+        "widths_mm": [0.08128, 0.110744],
+        "metric_note": "Observed B2 geometric copper differences are not promoted as Rev-A timing or layout limits."
+      },
       "constraints": ["STACKUP_REQUIRED_BEFORE_TRACE_WIDTH_OR_GAP", "TARGET_DIFFERENTIAL_IMPEDANCE_REQUIRED", "CONTINUOUS_REFERENCE_PLANE", "TRACK_INTRA_PAIR_SKEW", "TRACK_INTER_PAIR_SKEW_WHERE_APPLICABLE", "MINIMIZE_VIAS_AND_STUBS", "AVOID_RETURN_PATH_DISCONTINUITIES", "KEEP_AWAY_FROM_SWITCH_NODE_NOISE", "NO_DEBUG_STUBS"],
       "actual_metrics": {"trace_length_mm": null, "pair_skew_mm": null, "via_count": null, "target_diff_ohms": null}
     }
@@ -76,7 +106,7 @@
     "CONFIRM_U31_AUTHORITATIVE_PINOUT_AND_SUPPLY",
     "LOCK_OUR_MANUFACTURING_STACKUP_OR_EXPLICITLY_SELECT_REFERENCE_04161H02_1080",
     "SOLVE_OUR_TRACE_WIDTH_GAP_FROM_SELECTED_STACKUP_AND_FABRICATOR_FIELD_SOLVER",
-    "VERIFY_REFERENCE_TRACK_VIA_LAYER_METRICS_AGAINST_NATIVE_TRACKS6_VIAS6_AND_GERBERS",
+    "OBTAIN_AUTHORITATIVE_USB4_PCIE_ELECTRICAL_LAYOUT_LIMITS",
     "CREATE_REV_A_KICAD_NETS_AND_ROUTE_HIGH_SPEED_PAIRS",
     "LOCK_SERVICE_CONNECTOR_FOOTPRINT_AND_PLACEMENT",
     "PROVE_RESET_TIME_SPI_BUS_OWNERSHIP_ELECTRICALLY"
