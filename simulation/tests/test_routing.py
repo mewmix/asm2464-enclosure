@@ -16,6 +16,19 @@ class RoutingContractTests(unittest.TestCase):
         self.assertGreater(result["placement_chord_lower_bounds_mm"]["asm_to_m2"], 0)
         self.assertGreater(result["placement_chord_lower_bounds_mm"]["asm_to_flash"], 0)
 
+    def test_reference_stackup_is_evidence_not_our_route_geometry(self):
+        ref = self.contract["reference_manufacturing"]
+        self.assertEqual(ref["layers"], 4)
+        self.assertEqual(ref["board_thickness_mm"], 1.6)
+        self.assertEqual(ref["stackup_code"], "04161H02-1080")
+        self.assertEqual(ref["reference_diff_impedance_ohms_approx"], 85)
+        self.assertEqual(ref["transfer_status"], "REFERENCE_ONLY_NOT_OUR_FAB_STACKUP")
+        for domain in ("USB4", "PCIE"):
+            d = self.contract["high_speed_domains"][domain]
+            self.assertEqual(d["reference_profile"]["diff_impedance_ohms_approx"], 85)
+            self.assertIsNone(d["actual_metrics"]["target_diff_ohms"])
+            self.assertEqual(d["geometry_status"], "UNROUTED")
+
     def test_chord_is_only_a_geometric_lower_bound(self):
         d = chord_mm(self.contract, "ASM2464PD", "SPI_FLASH")
         self.assertGreater(d, 0)
