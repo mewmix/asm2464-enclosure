@@ -1,0 +1,95 @@
+name: Extract ASMedia high-speed layout guide evidence
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - agent/mandatory-asm-cosimulation
+    paths:
+      - '.github/workflows/asmedia-layout-guide-extract.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  extract-guide:
+    runs-on: ubuntu-latest
+    env:
+      SOURCE_REPO: https://github.com/openchips/JITx-ASM2464PDX_design.git
+      SOURCE_COMMIT: 0ef6ff9c09ce494f2fef8ad62c931fc61d817662
+      GUIDE_PATH: documentation/ASM2464PDX GEN4 2/High-speed signal Design Guide 1 2.pdf
+    steps:
+      - name: Check out enclosure model
+        uses: actions/checkout@v4
+
+      - name: Fetch pinned public source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git init /tmp/asmedia-guide-source
+          git -C /tmp/asmedia-guide-source remote add origin "$SOURCE_REPO"
+          git -C /tmp/asmedia-guide-source fetch --depth=1 origin "$SOURCE_COMMIT"
+          git -C /tmp/asmedia-guide-source checkout --detach FETCH_HEAD
+          test "$(git -C /tmp/asmedia-guide-source rev-parse HEAD)" = "$SOURCE_COMMIT"
+          cp "/tmp/asmedia-guide-source/$GUIDE_PATH" /tmp/asmedia-high-speed-guide.pdf
+          sha256sum /tmp/asmedia-high-speed-guide.pdf | tee /tmp/asmedia-high-speed-guide.sha256
+
+      - name: Extract text and routing evidence windows
+        shell: bash
+        run: |
+          set -euo pipefail
+          command -v pdftotext
+          pdftotext -layout /tmp/asmedia-high-speed-guide.pdf /tmp/asmedia-high-speed-guide.txt
+          python3 - <<'PY'
+          import json
+          import re
+          from pathlib import Path
+
+          text = Path('/tmp/asmedia-high-speed-guide.txt').read_text(errors='replace')
+          pages = text.split('\f')
+          terms = re.compile(r'impedance|skew|length|routing|route|trace|via|coupl|USB4|PCIe|PCI Express|Gen4', re.I)
+          evidence = []
+          for page_no, page in enumerate(pages, start=1):
+              lines = page.splitlines()
+              hits = [i for i, line in enumerate(lines) if terms.search(line)]
+              if not hits:
+                  continue
+              keep = set()
+              for i in hits:
+                  keep.update(range(max(0, i-3), min(len(lines), i+4)))
+              windows = []
+              start = prev = None
+              for i in sorted(keep):
+                  if start is None or i != prev + 1:
+                      if start is not None:
+                          windows.append(lines[start:prev+1])
+                      start = i
+                  prev = i
+              if start is not None:
+                  windows.append(lines[start:prev+1])
+              evidence.append({
+                  'pdf_page': page_no,
+                  'windows': ['\n'.join(w).strip() for w in windows if '\n'.join(w).strip()],
+              })
+
+          out = {
+              'status': 'DIAGNOSTIC_TEXT_EXTRACTION_NOT_YET_PROMOTED',
+              'source_repository': 'openchips/JITx-ASM2464PDX_design',
+              'source_commit': '0ef6ff9c09ce494f2fef8ad62c931fc61d817662',
+              'guide_path': 'documentation/ASM2464PDX GEN4 2/High-speed signal Design Guide 1 2.pdf',
+              'source_scope': 'ASM2464PDX_VARIANT_UNTIL_DOCUMENT_TEXT_PROVES_BROADER_APPLICABILITY',
+              'evidence_pages': evidence,
+          }
+          Path('/tmp/asmedia-layout-guide-evidence.json').write_text(json.dumps(out, indent=2) + '\n')
+          print(json.dumps(out, indent=2))
+          PY
+
+      - name: Upload diagnostic guide evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: asmedia-layout-guide-evidence
+          path: |
+            /tmp/asmedia-layout-guide-evidence.json
+            /tmp/asmedia-high-speed-guide.sha256
+          if-no-files-found: error
+          retention-days: 7
