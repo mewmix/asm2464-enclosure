@@ -1,0 +1,130 @@
+name: Extract source-native PCB routing geometry
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - agent/mandatory-asm-cosimulation
+    paths:
+      - '.github/workflows/source-native-routing-extract.yml'
+      - 'scripts/extract_native_reference_geometry.py'
+      - 'scripts/extract_reference_routing.py'
+      - 'reference/leaves232-b2/high-speed-routing-xref.json'
+
+permissions:
+  contents: read
+
+jobs:
+  source-native-routing:
+    runs-on: ubuntu-latest
+    env:
+      LEAVES_COMMIT: 8b7a5b2e510b9e8b6a98e5ba4e491064da3b950c
+      CONVERTER_COMMIT: e7be475c364ede8faf9e9e9efb95c18e9243b3ba
+      PCB_REL: ASM2464PD DEMO Board B2 [Altium Designer]/ASM2464PD - B2 Sample.PcbDoc
+    steps:
+      - name: Check out enclosure model
+        uses: actions/checkout@v4
+
+      - name: Fetch pinned reference and converter
+        shell: bash
+        run: |
+          set -euo pipefail
+          git init /tmp/leaves
+          git -C /tmp/leaves remote add origin https://github.com/Leaves232/2230-USB4-SSD-Enclosure-Design.git
+          git -C /tmp/leaves fetch --depth=1 origin "$LEAVES_COMMIT"
+          git -C /tmp/leaves checkout --detach FETCH_HEAD
+          test "$(git -C /tmp/leaves rev-parse HEAD)" = "$LEAVES_COMMIT"
+
+          git clone --filter=blob:none https://github.com/thesourcerer8/altium2kicad.git /tmp/altium2kicad
+          git -C /tmp/altium2kicad checkout --detach "$CONVERTER_COMMIT"
+          test "$(git -C /tmp/altium2kicad rev-parse HEAD)" = "$CONVERTER_COMMIT"
+
+          mkdir -p /tmp/native-routing
+          cp "/tmp/leaves/$PCB_REL" '/tmp/native-routing/ASM2464PD - B2 Sample.PcbDoc'
+          sha256sum '/tmp/native-routing/ASM2464PD - B2 Sample.PcbDoc' > /tmp/native-routing/source.sha256
+
+      - name: Unpack and convert pinned Altium board
+        shell: bash
+        working-directory: /tmp/native-routing
+        run: |
+          set -euo pipefail
+          perl /tmp/altium2kicad/unpack.pl 'ASM2464PD - B2 Sample.PcbDoc' > unpack.log
+          perl /tmp/altium2kicad/convertpcb.pl > convert.log
+          PCB_OUT="$(find . -maxdepth 3 -type f -name '*.kicad_pcb' ! -name 'wrlshapes.kicad_pcb' -print | head -n 1)"
+          test -n "$PCB_OUT"
+          printf '%s\n' "$PCB_OUT" > converted-pcb-path.txt
+
+          ROOT='ASM2464PD - B2 Sample-PcbDoc/Root Entry'
+          cp "$ROOT/Nets6/Data.dat.txt" native-nets.txt
+          cp "$ROOT/Tracks6/Data.dat.txt" native-tracks.txt
+          cp "$ROOT/Arcs6/Data.dat.txt" native-arcs.txt
+          cp "$ROOT/Vias6/Data.dat.txt" native-vias.txt
+          strings -a -n 2 "$ROOT/DifferentialPairs6/Data.dat" > native-differential-pairs-ascii.txt || true
+
+      - name: Build converted diagnostic baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+          PCB_OUT="$(cat /tmp/native-routing/converted-pcb-path.txt)"
+          python3 scripts/extract_reference_routing.py "/tmp/native-routing/$PCB_OUT" \
+            --native-pairs /tmp/native-routing/native-differential-pairs-ascii.txt \
+            --output /tmp/native-routing/converted-routing-report.json
+
+      - name: Decode and cross-check source-native geometry
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/extract_native_reference_geometry.py \
+            --native-nets /tmp/native-routing/native-nets.txt \
+            --native-tracks /tmp/native-routing/native-tracks.txt \
+            --native-arcs /tmp/native-routing/native-arcs.txt \
+            --native-vias /tmp/native-routing/native-vias.txt \
+            --converted-report /tmp/native-routing/converted-routing-report.json \
+            --output /tmp/native-routing/source-native-routing-report.json
+
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          r = json.loads(Path('/tmp/native-routing/source-native-routing-report.json').read_text())
+          c = r['converted_crosscheck']
+          assert r['status'] == 'SOURCE_NATIVE_ALTIUM_GEOMETRY_DIAGNOSTIC'
+          assert r['high_speed_net_count'] == 44
+          assert c['status'] == 'CORROBORATED'
+          assert c['checked_high_speed_nets'] == 44
+          assert c['max_abs_straight_length_delta_mm'] <= 0.00005
+          assert c['max_via_count_delta'] == 0
+          assert all(p['status'] == 'SOURCE_NATIVE_GEOMETRY' for p in r['end_to_end_paths'])
+          assert any(n['arc_count'] > 0 for n in r['high_speed_nets']), 'expected source-native high-speed tuning arcs'
+          print(json.dumps({
+              'high_speed_nets': r['high_speed_net_count'],
+              'straight_crosscheck_max_delta_mm': c['max_abs_straight_length_delta_mm'],
+              'via_crosscheck_max_delta': c['max_via_count_delta'],
+              'paths': [
+                  {
+                      'name': p['name'],
+                      'p_mm': p['positive']['copper_centerline_mm'],
+                      'n_mm': p['negative']['copper_centerline_mm'],
+                      'delta_mm': p['copper_centerline_delta_mm'],
+                      'p_vias': p['positive']['vias'],
+                      'n_vias': p['negative']['vias'],
+                  }
+                  for p in r['end_to_end_paths']
+              ],
+          }, indent=2))
+          PY
+
+      - name: Upload source-native routing evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: source-native-routing-geometry
+          path: |
+            /tmp/native-routing/source-native-routing-report.json
+            /tmp/native-routing/converted-routing-report.json
+            /tmp/native-routing/source.sha256
+            /tmp/native-routing/native-nets.txt
+            /tmp/native-routing/native-tracks.txt
+            /tmp/native-routing/native-arcs.txt
+            /tmp/native-routing/native-vias.txt
+            /tmp/native-routing/native-differential-pairs-ascii.txt
+          if-no-files-found: error
+          retention-days: 7
