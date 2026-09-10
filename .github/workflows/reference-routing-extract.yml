@@ -10,6 +10,7 @@ on:
       - 'scripts/extract_reference_routing.py'
       - 'hardware/rev-a/routing.json'
       - 'reference/leaves232-b2/routing-evidence.json'
+      - 'reference/leaves232-b2/high-speed-routing-xref.json'
 
 permissions:
   contents: read
@@ -57,10 +58,14 @@ jobs:
 
           ROOT='ASM2464PD - B2 Sample-PcbDoc/Root Entry'
           cp "$ROOT/Nets6/Data.dat.txt" native-nets.txt
+          cp "$ROOT/Tracks6/Data.dat.txt" native-tracks.txt
+          cp "$ROOT/Vias6/Data.dat.txt" native-vias.txt
+          cp "$ROOT/Pads6/Data.dat.txt" native-pads.txt
+          cp "$ROOT/Components6/Data.dat.txt" native-components.txt
           strings -a -n 2 "$ROOT/DifferentialPairs6/Data.dat" > native-differential-pairs-ascii.txt || true
           strings -a -el -n 2 "$ROOT/DifferentialPairs6/Data.dat" > native-differential-pairs-utf16le.txt || true
           xxd -g 1 "$ROOT/DifferentialPairs6/Data.dat" > native-differential-pairs.hex.txt
-          wc -c "$ROOT/Nets6/Data.dat" "$ROOT/Tracks6/Data.dat" "$ROOT/Vias6/Data.dat" "$ROOT/DifferentialPairs6/Data.dat" \
+          wc -c "$ROOT/Nets6/Data.dat" "$ROOT/Tracks6/Data.dat" "$ROOT/Vias6/Data.dat" "$ROOT/Pads6/Data.dat" "$ROOT/Components6/Data.dat" "$ROOT/DifferentialPairs6/Data.dat" \
             | tee native-stream-sizes.txt
 
       - name: Extract per-net segment via layer and source-native pair metrics
@@ -113,6 +118,10 @@ jobs:
             /tmp/reference-routing/convert.log
             /tmp/reference-routing/converted-files.txt
             /tmp/reference-routing/native-nets.txt
+            /tmp/reference-routing/native-tracks.txt
+            /tmp/reference-routing/native-vias.txt
+            /tmp/reference-routing/native-pads.txt
+            /tmp/reference-routing/native-components.txt
             /tmp/reference-routing/native-differential-pairs-ascii.txt
             /tmp/reference-routing/native-differential-pairs-utf16le.txt
             /tmp/reference-routing/native-differential-pairs.hex.txt
