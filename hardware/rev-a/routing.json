@@ -1,5 +1,5 @@
 {
-  "revision": "rev-a-routing-contract-1",
+  "revision": "rev-a-routing-contract-2",
   "status": "PROVISIONAL_CONSTRAINT_MODEL_NOT_FABRICATION_READY",
   "source_board_revision": "rev-a-digital-twin-1",
   "board_outline_mm": {
@@ -7,6 +7,20 @@
     "length": 33.6804,
     "evidence": "FAB_OUTPUT",
     "source": "mechanical/rev-a/review/dimensions.json"
+  },
+  "reference_manufacturing": {
+    "source": "reference/leaves232-b2/routing-evidence.json",
+    "layers": 4,
+    "board_thickness_mm": 1.6,
+    "stackup_code": "04161H02-1080",
+    "outer_copper_oz": 1.0,
+    "inner_copper_oz": 0.5,
+    "minimum_trace_space_mil": [3.5, 3.5],
+    "minimum_via_mm": 0.2,
+    "reference_diff_impedance_ohms_approx": 85,
+    "reference_diff_layers": ["top", "bottom"],
+    "evidence": "REFERENCE_PCB",
+    "transfer_status": "REFERENCE_ONLY_NOT_OUR_FAB_STACKUP"
   },
   "components": {
     "ASM2464PD": {
@@ -131,6 +145,12 @@
       "topology_status": "BLOCKED_EXACT_REFERENCE_NETMAP_UNEXTRACTED",
       "geometry_status": "UNROUTED",
       "evidence": "INFERRED",
+      "reference_profile": {
+        "diff_impedance_ohms_approx": 85,
+        "layers": ["top", "bottom"],
+        "stackup_code": "04161H02-1080",
+        "evidence": "REFERENCE_PCB"
+      },
       "constraints": [
         "STACKUP_REQUIRED_BEFORE_TRACE_WIDTH_OR_GAP",
         "TARGET_DIFFERENTIAL_IMPEDANCE_REQUIRED",
@@ -154,6 +174,13 @@
       "topology_status": "BLOCKED_EXACT_REFERENCE_NETMAP_UNEXTRACTED",
       "geometry_status": "UNROUTED",
       "evidence": "INFERRED",
+      "reference_profile": {
+        "diff_impedance_ohms_approx": 85,
+        "layers": ["top", "bottom"],
+        "stackup_code": "04161H02-1080",
+        "evidence": "REFERENCE_PCB",
+        "scope_note": "Reference README states top/bottom differential routing should be about 85 ohm; exact per-domain rule assignment still requires net-map extraction."
+      },
       "constraints": [
         "STACKUP_REQUIRED_BEFORE_TRACE_WIDTH_OR_GAP",
         "TARGET_DIFFERENTIAL_IMPEDANCE_REQUIRED",
@@ -176,8 +203,9 @@
   "unresolved_gates": [
     "EXTRACT_REFERENCE_SCHEMATIC_NETMAP_FOR_USB4_PCIE_AND_U31",
     "CONFIRM_U31_AUTHORITATIVE_PINOUT_AND_SUPPLY",
-    "SELECT_MANUFACTURING_STACKUP_AND_DIELECTRIC_DATA",
-    "SET_USB4_PCIE_IMPEDANCE_AND_SKEW_BUDGETS_FROM_APPLICABLE_SPECS_AND_STACKUP",
+    "LOCK_OUR_MANUFACTURING_STACKUP_OR_EXPLICITLY_SELECT_REFERENCE_04161H02_1080",
+    "SOLVE_OUR_TRACE_WIDTH_GAP_FROM_SELECTED_STACKUP_AND_FABRICATOR_FIELD_SOLVER",
+    "EXTRACT_REFERENCE_PAIR_LENGTHS_VIA_COUNTS_AND_LAYER_TRANSITIONS",
     "LOCK_SERVICE_CONNECTOR_FOOTPRINT_AND_PLACEMENT",
     "PROVE_RESET_TIME_SPI_BUS_OWNERSHIP_ELECTRICALLY"
   ]
