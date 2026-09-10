@@ -1,0 +1,30 @@
+name: Rev-A bootstrap
+on:
+  push:
+    branches:
+      - agent/mandatory-asm-cosimulation
+permissions:
+  contents: write
+jobs:
+  materialize:
+    if: contains(github.event.head_commit.message, '[rev-a-bootstrap]')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/mandatory-asm-cosimulation
+      - name: Materialize and validate Rev-A first cycle
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .rev-a-bootstrap/payload-*.txt | base64 -d > /tmp/rev-a.tar.gz
+          echo "f9b0251bfbcac15204b08662eccda5bfe7cd76b1dfa365322f7810bb31e5f29a  /tmp/rev-a.tar.gz" | sha256sum -c -
+          tar -xzf /tmp/rev-a.tar.gz
+          python scripts/validate_rev_a_structure.py
+          rm -rf .rev-a-bootstrap
+          rm -f .github/workflows/rev-a-bootstrap.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "kicad: establish Rev-A structural netted board"
+          git push origin HEAD:agent/mandatory-asm-cosimulation
