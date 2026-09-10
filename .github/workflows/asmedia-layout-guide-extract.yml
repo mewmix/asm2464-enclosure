@@ -34,23 +34,28 @@ jobs:
           cp "/tmp/asmedia-guide-source/$GUIDE_PATH" /tmp/asmedia-high-speed-guide.pdf
           sha256sum /tmp/asmedia-high-speed-guide.pdf | tee /tmp/asmedia-high-speed-guide.sha256
 
-      - name: Extract text and routing evidence windows
+      - name: Install text extractor
         shell: bash
         run: |
           set -euo pipefail
-          command -v pdftotext
-          pdftotext -layout /tmp/asmedia-high-speed-guide.pdf /tmp/asmedia-high-speed-guide.txt
+          python3 -m pip install --disable-pip-version-check --quiet 'pypdf==6.0.0'
+
+      - name: Extract routing evidence windows
+        shell: bash
+        run: |
+          set -euo pipefail
           python3 - <<'PY'
           import json
           import re
           from pathlib import Path
+          from pypdf import PdfReader
 
-          text = Path('/tmp/asmedia-high-speed-guide.txt').read_text(errors='replace')
-          pages = text.split('\f')
+          reader = PdfReader('/tmp/asmedia-high-speed-guide.pdf')
           terms = re.compile(r'impedance|skew|length|routing|route|trace|via|coupl|USB4|PCIe|PCI Express|Gen4', re.I)
           evidence = []
-          for page_no, page in enumerate(pages, start=1):
-              lines = page.splitlines()
+          for page_no, page in enumerate(reader.pages, start=1):
+              text = page.extract_text(extraction_mode='layout') or ''
+              lines = text.splitlines()
               hits = [i for i, line in enumerate(lines) if terms.search(line)]
               if not hits:
                   continue
@@ -77,7 +82,9 @@ jobs:
               'source_repository': 'openchips/JITx-ASM2464PDX_design',
               'source_commit': '0ef6ff9c09ce494f2fef8ad62c931fc61d817662',
               'guide_path': 'documentation/ASM2464PDX GEN4 2/High-speed signal Design Guide 1 2.pdf',
+              'guide_sha256': 'ef15e5e7d2d3aa94f1e898dc39f43f69e040e1077afad561455f9b3b969b0d92',
               'source_scope': 'ASM2464PDX_VARIANT_UNTIL_DOCUMENT_TEXT_PROVES_BROADER_APPLICABILITY',
+              'page_count': len(reader.pages),
               'evidence_pages': evidence,
           }
           Path('/tmp/asmedia-layout-guide-evidence.json').write_text(json.dumps(out, indent=2) + '\n')
