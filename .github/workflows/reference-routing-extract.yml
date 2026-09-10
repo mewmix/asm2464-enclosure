@@ -55,6 +55,14 @@ jobs:
           test -n "$PCB_OUT"
           printf '%s\n' "$PCB_OUT" > converted-pcb-path.txt
 
+          ROOT='ASM2464PD - B2 Sample-PcbDoc/Root Entry'
+          cp "$ROOT/Nets6/Data.dat.txt" native-nets.txt
+          strings -a -n 2 "$ROOT/DifferentialPairs6/Data.dat" > native-differential-pairs-ascii.txt || true
+          strings -a -el -n 2 "$ROOT/DifferentialPairs6/Data.dat" > native-differential-pairs-utf16le.txt || true
+          xxd -g 1 "$ROOT/DifferentialPairs6/Data.dat" > native-differential-pairs.hex.txt
+          wc -c "$ROOT/Nets6/Data.dat" "$ROOT/Tracks6/Data.dat" "$ROOT/Vias6/Data.dat" "$ROOT/DifferentialPairs6/Data.dat" \
+            | tee native-stream-sizes.txt
+
       - name: Extract per-net segment via and layer metrics
         shell: bash
         run: |
@@ -71,8 +79,11 @@ jobs:
           assert r['net_count_with_routing'] > 0
           print(json.dumps({
               'routed_nets': r['net_count_with_routing'],
+              'modules_seen': r['module_count_seen'],
               'high_speed_candidates': r['high_speed_candidate_count'],
+              'candidate_pairs': r['candidate_pair_count'],
               'candidate_names': [x['name'] for x in r['candidate_high_speed_nets']],
+              'pair_bases': [x['pair_base'] for x in r['candidate_high_speed_pairs']],
           }, indent=2))
           PY
 
@@ -86,5 +97,10 @@ jobs:
             /tmp/reference-routing/unpack.log
             /tmp/reference-routing/convert.log
             /tmp/reference-routing/converted-files.txt
+            /tmp/reference-routing/native-nets.txt
+            /tmp/reference-routing/native-differential-pairs-ascii.txt
+            /tmp/reference-routing/native-differential-pairs-utf16le.txt
+            /tmp/reference-routing/native-differential-pairs.hex.txt
+            /tmp/reference-routing/native-stream-sizes.txt
           if-no-files-found: error
           retention-days: 7
