@@ -1,0 +1,110 @@
+{
+  "revision": "rev-a-kicad-constraint-scaffold-1",
+  "status": "SCAFFOLD_ONLY_NOT_FABRICATION_READY",
+  "purpose": "Define Rev-A logical high-speed classes and pair identities without copying reference-board geometry into production constraints.",
+  "routing_contract": "hardware/rev-a/routing.json",
+  "fabrication_stackup": {
+    "status": "UNSELECTED",
+    "fabricator": null,
+    "stackup_code": null,
+    "layer_count": null,
+    "board_thickness_mm": null,
+    "copper_oz": null,
+    "dielectric_data": null,
+    "evidence": "BLOCKED_PENDING_FABRICATOR_STACKUP"
+  },
+  "production_geometry": {
+    "status": "BLOCKED_PENDING_STACKUP_AND_FIELD_SOLVER",
+    "usb4": {
+      "target_diff_ohms": null,
+      "trace_width_mm": null,
+      "pair_gap_mm": null,
+      "max_intra_pair_skew_mm": null,
+      "max_vias_per_conductor": null
+    },
+    "pcie": {
+      "target_diff_ohms": null,
+      "trace_width_mm": null,
+      "pair_gap_mm": null,
+      "max_intra_pair_skew_mm": null,
+      "max_vias_per_conductor": null
+    },
+    "usb2": {
+      "target_diff_ohms": null,
+      "trace_width_mm": null,
+      "pair_gap_mm": null,
+      "max_intra_pair_skew_mm": null,
+      "max_vias_per_conductor": null
+    }
+  },
+  "reference_geometry_guard": {
+    "source": "reference/leaves232-b2/source-native-routing-geometry.json",
+    "status": "REFERENCE_ONLY_NOT_REV_A_TARGETS",
+    "forbidden_as_implicit_production_widths_mm": [0.08128, 0.110744],
+    "note": "Observed Leaves232 B2 widths and copper-centerline deltas are evidence, not Rev-A KiCad design-rule values."
+  },
+  "net_classes": {
+    "USB4_DIFF": {
+      "domain": "USB4",
+      "routing_state": "LOGICAL_ONLY",
+      "reference_plane": "CONTINUOUS_GROUND_REQUIRED",
+      "allow_debug_stubs": false,
+      "minimize_vias": true,
+      "production_rule_binding": "BLOCKED_PENDING_FIELD_SOLVER"
+    },
+    "PCIE_DIFF": {
+      "domain": "PCIE",
+      "routing_state": "LOGICAL_ONLY",
+      "reference_plane": "CONTINUOUS_GROUND_REQUIRED",
+      "allow_debug_stubs": false,
+      "minimize_vias": true,
+      "production_rule_binding": "BLOCKED_PENDING_FIELD_SOLVER"
+    },
+    "USB2_DIFF": {
+      "domain": "USB2",
+      "routing_state": "LOGICAL_ONLY",
+      "reference_plane": "CONTINUOUS_GROUND_REQUIRED",
+      "allow_debug_stubs": false,
+      "minimize_vias": true,
+      "production_rule_binding": "BLOCKED_PENDING_FIELD_SOLVER"
+    },
+    "DEBUG_LOW_SPEED": {
+      "domain": "DEBUG",
+      "routing_state": "LOGICAL_ONLY",
+      "reference_plane": "GROUND_REFERENCE_REQUIRED",
+      "separate_from": ["USB4_DIFF", "PCIE_DIFF"],
+      "production_rule_binding": "DEFAULT_LOW_SPEED_RULES_PENDING_BOARD_CREATION"
+    }
+  },
+  "planned_pairs": [
+    {"name": "USB4_UTX0", "class": "USB4_DIFF", "positive_net": null, "negative_net": null, "reference_pair": "UTX0+UTX0_CON", "rev_a_connectivity": "PENDING_SCHEMATIC"},
+    {"name": "USB4_UTX1", "class": "USB4_DIFF", "positive_net": null, "negative_net": null, "reference_pair": "UTX1+UTX1_CON", "rev_a_connectivity": "PENDING_SCHEMATIC"},
+    {"name": "USB4_URX0", "class": "USB4_DIFF", "positive_net": null, "negative_net": null, "reference_pair": "URX0+URX0_CON", "rev_a_connectivity": "PENDING_SCHEMATIC"},
+    {"name": "USB4_URX1", "class": "USB4_DIFF", "positive_net": null, "negative_net": null, "reference_pair": "URX1+URX1_CON", "rev_a_connectivity": "PENDING_SCHEMATIC"},
+    {"name": "PCIE_TX0", "class": "PCIE_DIFF", "positive_net": null, "negative_net": null, "reference_pair": "PET0+PET0U", "rev_a_connectivity": "PENDING_SCHEMATIC"},
+    {"name": "PCIE_TX1", "class": "PCIE_DIFF", "positive_net": null, "negative_net": null, "reference_pair": "PET1+PET1U", "rev_a_connectivity": "PENDING_SCHEMATIC"},
+    {"name": "PCIE_TX2", "class": "PCIE_DIFF", "positive_net": null, "negative_net": null, "reference_pair": "PET2+PET2U", "rev_a_connectivity": "PENDING_SCHEMATIC"},
+    {"name": "PCIE_TX3", "class": "PCIE_DIFF", "positive_net": null, "negative_net": null, "reference_pair": "PET3+PET3U", "rev_a_connectivity": "PENDING_SCHEMATIC"},
+    {"name": "PCIE_RX0", "class": "PCIE_DIFF", "positive_net": null, "negative_net": null, "reference_pair": "PER0", "rev_a_connectivity": "PENDING_SCHEMATIC"},
+    {"name": "PCIE_RX1", "class": "PCIE_DIFF", "positive_net": null, "negative_net": null, "reference_pair": "PER1", "rev_a_connectivity": "PENDING_SCHEMATIC"},
+    {"name": "PCIE_RX2", "class": "PCIE_DIFF", "positive_net": null, "negative_net": null, "reference_pair": "PER2", "rev_a_connectivity": "PENDING_SCHEMATIC"},
+    {"name": "PCIE_RX3", "class": "PCIE_DIFF", "positive_net": null, "negative_net": null, "reference_pair": "PER3", "rev_a_connectivity": "PENDING_SCHEMATIC"},
+    {"name": "PCIE_REFCLK", "class": "PCIE_DIFF", "positive_net": null, "negative_net": null, "reference_pair": "RefCLK", "rev_a_connectivity": "PENDING_SCHEMATIC"},
+    {"name": "USB2_UD", "class": "USB2_DIFF", "positive_net": null, "negative_net": null, "reference_pair": "UD", "rev_a_connectivity": "PENDING_SCHEMATIC"}
+  ],
+  "kicad_emit": {
+    "status": "BLOCKED",
+    "blocked_by": [
+      "REV_A_SCHEMATIC_NET_NAMES_NOT_LOCKED",
+      "FABRICATION_STACKUP_NOT_SELECTED",
+      "FIELD_SOLVED_WIDTH_GAP_NOT_AVAILABLE",
+      "AUTHORITATIVE_ELECTRICAL_LAYOUT_LIMITS_NOT_LOCKED"
+    ],
+    "outputs_when_unblocked": [
+      "hardware/rev-a/kicad/rev-a.kicad_pro",
+      "hardware/rev-a/kicad/rev-a.kicad_sch",
+      "hardware/rev-a/kicad/rev-a.kicad_pcb",
+      "hardware/rev-a/kicad/rev-a.kicad_dru"
+    ]
+  }
+}
