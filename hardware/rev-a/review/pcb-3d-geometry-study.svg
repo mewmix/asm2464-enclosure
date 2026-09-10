@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1100"><rect width="800" height="1100" fill="white"/><text x="30" y="40" font-family="monospace" font-size="24">ASM2464 REV-A 3D GEOMETRY STUDY — not KiCad STEP export</text>
+<polygon points="150,280 570,160 700,420 280,540" fill="#eef5ee" stroke="black" stroke-width="3"/>
+<rect x="372.6" y="264.1" width="190.6" height="77.2" fill="none" stroke="black" stroke-width="2"/>
+<text x="467.8" y="302.7" text-anchor="middle" font-family="monospace" font-size="13">ASM 10x10 x0.982 max</text>
+<rect x="388.4" y="355.1" width="170.4" height="61.0" fill="none" stroke="black" stroke-width="2"/>
+<text x="473.6" y="385.6" text-anchor="middle" font-family="monospace" font-size="13">Molex 105450-0101</text>
+<rect x="172.4" y="153.8" width="411.6" height="34.0" fill="none" stroke="black" stroke-width="2"/>
+<text x="378.2" y="170.7" text-anchor="middle" font-family="monospace" font-size="13">LOTES M.2 H4.75</text>
+<rect x="608.1" y="301.1" width="38.1" height="23.2" fill="none" stroke="black" stroke-width="2"/>
+<text x="627.1" y="312.7" text-anchor="middle" font-family="monospace" font-size="13">U31 USON</text>
+<text x="30" y="1025" font-family="monospace" font-size="14">Geometry review only. Thermal pad compression, connector tail details, and final enclosure interference remain validation blockers.</text>
+</svg>

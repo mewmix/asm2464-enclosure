@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1100"><rect width="800" height="1100" fill="white"/><text x="30" y="40" font-family="monospace" font-size="24">ASM2464 REV-A TOP — structural netted study</text>
+<rect x="70.0" y="90.0" width="650.0" height="900.0" fill="#eef5ee" stroke="black" stroke-width="3"/>
+<rect x="325.6" y="459.0" width="294.9" height="267.2" fill="none" stroke="black" stroke-width="2"/>
+<text x="473.1" y="592.6" text-anchor="middle" font-family="monospace" font-size="14">U2 ASM2464PD</text>
+<rect x="263.8" y="103.2" width="265.4" height="213.8" fill="none" stroke="black" stroke-width="2"/>
+<text x="396.5" y="210.1" text-anchor="middle" font-family="monospace" font-size="14">J1 Molex USB-C</text>
+<circle cx="441.8" cy="378.7" r="5" fill="none" stroke="black"/><text x="447.8" y="378.7" font-family="monospace" font-size="9">C64</text>
+<circle cx="419.3" cy="378.7" r="5" fill="none" stroke="black"/><text x="425.3" y="378.7" font-family="monospace" font-size="9">C65</text>
+<circle cx="285.0" cy="378.7" r="5" fill="none" stroke="black"/><text x="291.0" y="378.7" font-family="monospace" font-size="9">C73</text>
+<circle cx="307.5" cy="378.7" r="5" fill="none" stroke="black"/><text x="313.5" y="378.7" font-family="monospace" font-size="9">C72</text>
+<circle cx="460.1" cy="812.3" r="5" fill="none" stroke="black"/><text x="466.1" y="812.3" font-family="monospace" font-size="9">C56</text>
+<circle cx="437.6" cy="812.3" r="5" fill="none" stroke="black"/><text x="443.6" y="812.3" font-family="monospace" font-size="9">C55</text>
+<circle cx="391.6" cy="834.6" r="5" fill="none" stroke="black"/><text x="397.6" y="834.6" font-family="monospace" font-size="9">C54</text>
+<circle cx="369.1" cy="834.6" r="5" fill="none" stroke="black"/><text x="375.1" y="834.6" font-family="monospace" font-size="9">C53</text>
+<circle cx="252.3" cy="814.6" r="5" fill="none" stroke="black"/><text x="258.3" y="814.6" font-family="monospace" font-size="9">C52</text>
+<circle cx="229.8" cy="814.6" r="5" fill="none" stroke="black"/><text x="235.8" y="814.6" font-family="monospace" font-size="9">C50</text>
+<circle cx="214.7" cy="874.8" r="5" fill="none" stroke="black"/><text x="220.7" y="874.8" font-family="monospace" font-size="9">C49</text>
+<circle cx="192.3" cy="874.8" r="5" fill="none" stroke="black"/><text x="198.3" y="874.8" font-family="monospace" font-size="9">C48</text>
+<text x="30" y="1040" font-family="monospace" font-size="14">No routed high-speed copper is represented. Ratsnest/connectivity only until stackup + solver lock.</text>
+</svg>

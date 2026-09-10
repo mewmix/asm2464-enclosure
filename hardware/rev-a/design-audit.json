@@ -1,0 +1,937 @@
+{
+  "schema_version": 2,
+  "artifact_status": "STRUCTURAL_NETTED_NOT_FABRICATION_READY",
+  "generated_from": "scripts/generate_rev_a_kicad.py",
+  "evidence_hierarchy": [
+    "AUTHORITATIVE_ASM2464PD_DOCUMENTATION",
+    "AUTHORITATIVE_COMPONENT_DATASHEETS",
+    "PHYSICAL_REFERENCE_FAB_OUTPUTS",
+    "REFERENCE_SOURCE_NATIVE",
+    "CONVERTED_KICAD",
+    "VENDOR_FAMILY_GUIDES",
+    "ENGINEERING_INFERENCE",
+    "PROVISIONAL_ASSUMPTION"
+  ],
+  "board": {
+    "width_mm": 22.039834,
+    "height_mm": 33.6804,
+    "nominal_reference_thickness_mm": 1.6,
+    "stackup_status": "UNSELECTED",
+    "field_solver_status": "NOT_RUN",
+    "production_routing_geometry": "NULL_BY_POLICY"
+  },
+  "components": [
+    {
+      "component": "ASM2464PD",
+      "refdes": "U2",
+      "footprint": "ASM2464PD_BGA273_10x10_P0.46",
+      "position_mm": {
+        "x": 13.6672574,
+        "y": 14.8704808
+      },
+      "rotation_deg": 270,
+      "source_evidence": [
+        "AUTHORITATIVE_ASM2464PD_DATASHEET_R02",
+        "FAB_OUTPUT_LEAVES_PNP_PLACEMENT"
+      ],
+      "confidence": "HIGH",
+      "electrical_status": "AUTHORITATIVE_BALL_MAP_NETTED_FOR_REQUIRED_DOMAINS",
+      "mechanical_status": "STRUCTURAL_LAND_GEOMETRY_ONLY",
+      "unresolved_blockers": [
+        "COMPLETE_FAB_LAND_PATTERN_NOT_PUBLISHED_IN_INGESTED_DATASHEET",
+        "STACKUP_UNSELECTED",
+        "FIELD_SOLVER_NOT_RUN"
+      ]
+    },
+    {
+      "component": "Molex 105450-0101",
+      "refdes": "J1",
+      "footprint": "Molex_105450-0101",
+      "position_mm": {
+        "x": 11.0699804,
+        "y": 29.187267
+      },
+      "rotation_deg": 0,
+      "source_evidence": [
+        "REFERENCE_SOURCE_NATIVE_PART_ID",
+        "AUTHORITATIVE_MOLEX_DRAWING",
+        "OFFICIAL_KICAD_FOOTPRINT_CROSSCHECK"
+      ],
+      "confidence": "HIGH",
+      "electrical_status": "TYPE_C_PIN_ASSIGNMENT_NETTED",
+      "mechanical_status": "BODY_PAD_AND_PCB_EDGE_DATUM_SOURCE_GROUNDED;KICAD_ORIENTATION_NORMALIZED_FROM_SOURCE_PNP",
+      "unresolved_blockers": [
+        "SOURCE_PNP_ROTATION_180_NOT_DIRECTLY_PORTABLE_ACROSS_LIBRARY_ORIENTATION",
+        "ESD_PART_SELECTION_PENDING"
+      ]
+    },
+    {
+      "component": "LOTES APCI0113-P001A",
+      "refdes": "J2",
+      "footprint": "LOTES_APCI0113-P001A_MKey_RECONSTRUCTED",
+      "position_mm": {
+        "x": 11.0238794,
+        "y": 4.6976538
+      },
+      "rotation_deg": 0,
+      "source_evidence": [
+        "REFERENCE_SOURCE_NATIVE_PART_ID",
+        "LOTES_DISTRIBUTOR_DATASHEET_METADATA",
+        "M2_SOCKET3_PIN_ASSIGNMENT_INDEPENDENT_REFERENCE"
+      ],
+      "confidence": "MEDIUM",
+      "electrical_status": "PCIE_X4_REFCLK_PERST_NETTED",
+      "mechanical_status": "67_CONTACT_0P5MM_H4P75_RECONSTRUCTION",
+      "unresolved_blockers": [
+        "EXACT_LOTES_PRODUCT_DRAWING_SOLDER_TAIL_AND_POST_LAND_PATTERN_NOT_INGESTED"
+      ]
+    },
+    {
+      "component": "ZD25WQ16CEIGR",
+      "refdes": "U31",
+      "footprint": "ZD25WQ16CEIGR_USON8_3x2_P0.5_RECONSTRUCTED",
+      "position_mm": {
+        "x": 20.9301842,
+        "y": 20.2771502
+      },
+      "rotation_deg": 0,
+      "source_evidence": [
+        "REFERENCE_SOURCE_NATIVE_EXACT_SUFFIX",
+        "ZD25WQ16C_COMPONENT_DATASHEET"
+      ],
+      "confidence": "HIGH",
+      "electrical_status": "SPI_PINOUT_RESOLVED_AND_NETTED",
+      "mechanical_status": "PACKAGE_BODY_AND_PITCH_RESOLVED_LANDS_RECONSTRUCTED",
+      "unresolved_blockers": [
+        "MANUFACTURER_USON_LAND_PATTERN_DRAWING_NOT_INGESTED"
+      ]
+    },
+    {
+      "component": "220n",
+      "refdes": "C64",
+      "footprint": "RevA_0201_2Pad",
+      "position_mm": {
+        "x": 12.607442399999998,
+        "y": 22.874782800000002
+      },
+      "rotation_deg": 270,
+      "source_evidence": [
+        "REFERENCE_SOURCE_NATIVE",
+        "LEAVES_HIGH_SPEED_ROUTING_XREF"
+      ],
+      "confidence": "MEDIUM",
+      "electrical_status": "NETTED_AC_COUPLING",
+      "mechanical_status": "REFERENCE_PNP_POSITION_TRANSLATED",
+      "unresolved_blockers": [
+        "VALUES_TO_BE_RECONFIRMED_AGAINST_REV_A_SI_REQUIREMENTS"
+      ]
+    },
+    {
+      "component": "220n",
+      "refdes": "C65",
+      "footprint": "RevA_0201_2Pad",
+      "position_mm": {
+        "x": 11.845442399999998,
+        "y": 22.874782800000002
+      },
+      "rotation_deg": 270,
+      "source_evidence": [
+        "REFERENCE_SOURCE_NATIVE",
+        "LEAVES_HIGH_SPEED_ROUTING_XREF"
+      ],
+      "confidence": "MEDIUM",
+      "electrical_status": "NETTED_AC_COUPLING",
+      "mechanical_status": "REFERENCE_PNP_POSITION_TRANSLATED",
+      "unresolved_blockers": [
+        "VALUES_TO_BE_RECONFIRMED_AGAINST_REV_A_SI_REQUIREMENTS"
+      ]
+    },
+    {
+      "component": "220n",
+      "refdes": "C75",
+      "footprint": "RevA_0201_2Pad",
+      "position_mm": {
+        "x": 9.610216999999997,
+        "y": 22.874782800000002
+      },
+      "rotation_deg": 270,
+      "source_evidence": [
+        "REFERENCE_SOURCE_NATIVE",
+        "LEAVES_HIGH_SPEED_ROUTING_XREF"
+      ],
+      "confidence": "MEDIUM",
+      "electrical_status": "NETTED_AC_COUPLING",
+      "mechanical_status": "REFERENCE_PNP_POSITION_TRANSLATED",
+      "unresolved_blockers": [
+        "VALUES_TO_BE_RECONFIRMED_AGAINST_REV_A_SI_REQUIREMENTS"
+      ]
+    },
+    {
+      "component": "220n",
+      "refdes": "C74",
+      "footprint": "RevA_0201_2Pad",
+      "position_mm": {
+        "x": 10.372216999999997,
+        "y": 22.874782800000002
+      },
+      "rotation_deg": 270,
+      "source_evidence": [
+        "REFERENCE_SOURCE_NATIVE",
+        "LEAVES_HIGH_SPEED_ROUTING_XREF"
+      ],
+      "confidence": "MEDIUM",
+      "electrical_status": "NETTED_AC_COUPLING",
+      "mechanical_status": "REFERENCE_PNP_POSITION_TRANSLATED",
+      "unresolved_blockers": [
+        "VALUES_TO_BE_RECONFIRMED_AGAINST_REV_A_SI_REQUIREMENTS"
+      ]
+    },
+    {
+      "component": "330n",
+      "refdes": "C62",
+      "footprint": "RevA_0201_2Pad",
+      "position_mm": {
+        "x": 14.827859599999998,
+        "y": 22.874782800000002
+      },
+      "rotation_deg": 270,
+      "source_evidence": [
+        "REFERENCE_SOURCE_NATIVE",
+        "LEAVES_HIGH_SPEED_ROUTING_XREF"
+      ],
+      "confidence": "MEDIUM",
+      "electrical_status": "NETTED_AC_COUPLING",
+      "mechanical_status": "REFERENCE_PNP_POSITION_TRANSLATED",
+      "unresolved_blockers": [
+        "VALUES_TO_BE_RECONFIRMED_AGAINST_REV_A_SI_REQUIREMENTS"
+      ]
+    },
+    {
+      "component": "330n",
+      "refdes": "C63",
+      "footprint": "RevA_0201_2Pad",
+      "position_mm": {
+        "x": 14.065859600000001,
+        "y": 22.874782800000002
+      },
+      "rotation_deg": 270,
+      "source_evidence": [
+        "REFERENCE_SOURCE_NATIVE",
+        "LEAVES_HIGH_SPEED_ROUTING_XREF"
+      ],
+      "confidence": "MEDIUM",
+      "electrical_status": "NETTED_AC_COUPLING",
+      "mechanical_status": "REFERENCE_PNP_POSITION_TRANSLATED",
+      "unresolved_blockers": [
+        "VALUES_TO_BE_RECONFIRMED_AGAINST_REV_A_SI_REQUIREMENTS"
+      ]
+    },
+    {
+      "component": "330n",
+      "refdes": "C73",
+      "footprint": "RevA_0201_2Pad",
+      "position_mm": {
+        "x": 7.289698399999997,
+        "y": 22.874782800000002
+      },
+      "rotation_deg": 270,
+      "source_evidence": [
+        "REFERENCE_SOURCE_NATIVE",
+        "LEAVES_HIGH_SPEED_ROUTING_XREF"
+      ],
+      "confidence": "MEDIUM",
+      "electrical_status": "NETTED_AC_COUPLING",
+      "mechanical_status": "REFERENCE_PNP_POSITION_TRANSLATED",
+      "unresolved_blockers": [
+        "VALUES_TO_BE_RECONFIRMED_AGAINST_REV_A_SI_REQUIREMENTS"
+      ]
+    },
+    {
+      "component": "330n",
+      "refdes": "C72",
+      "footprint": "RevA_0201_2Pad",
+      "position_mm": {
+        "x": 8.051698399999998,
+        "y": 22.874782800000002
+      },
+      "rotation_deg": 270,
+      "source_evidence": [
+        "REFERENCE_SOURCE_NATIVE",
+        "LEAVES_HIGH_SPEED_ROUTING_XREF"
+      ],
+      "confidence": "MEDIUM",
+      "electrical_status": "NETTED_AC_COUPLING",
+      "mechanical_status": "REFERENCE_PNP_POSITION_TRANSLATED",
+      "unresolved_blockers": [
+        "VALUES_TO_BE_RECONFIRMED_AGAINST_REV_A_SI_REQUIREMENTS"
+      ]
+    },
+    {
+      "component": "220n",
+      "refdes": "C56",
+      "footprint": "RevA_0201_2Pad",
+      "position_mm": {
+        "x": 13.226033999999997,
+        "y": 6.650304199999999
+      },
+      "rotation_deg": 270,
+      "source_evidence": [
+        "REFERENCE_SOURCE_NATIVE",
+        "LEAVES_HIGH_SPEED_ROUTING_XREF"
+      ],
+      "confidence": "MEDIUM",
+      "electrical_status": "NETTED_AC_COUPLING",
+      "mechanical_status": "REFERENCE_PNP_POSITION_TRANSLATED",
+      "unresolved_blockers": [
+        "VALUES_TO_BE_RECONFIRMED_AGAINST_REV_A_SI_REQUIREMENTS"
+      ]
+    },
+    {
+      "component": "220n",
+      "refdes": "C55",
+      "footprint": "RevA_0201_2Pad",
+      "position_mm": {
+        "x": 12.464033999999996,
+        "y": 6.650304199999999
+      },
+      "rotation_deg": 270,
+      "source_evidence": [
+        "REFERENCE_SOURCE_NATIVE",
+        "LEAVES_HIGH_SPEED_ROUTING_XREF"
+      ],
+      "confidence": "MEDIUM",
+      "electrical_status": "NETTED_AC_COUPLING",
+      "mechanical_status": "REFERENCE_PNP_POSITION_TRANSLATED",
+      "unresolved_blockers": [
+        "VALUES_TO_BE_RECONFIRMED_AGAINST_REV_A_SI_REQUIREMENTS"
+      ]
+    },
+    {
+      "component": "220n",
+      "refdes": "C54",
+      "footprint": "RevA_0201_2Pad",
+      "position_mm": {
+        "x": 10.905261399999999,
+        "y": 5.814288599999999
+      },
+      "rotation_deg": 270,
+      "source_evidence": [
+        "REFERENCE_SOURCE_NATIVE",
+        "LEAVES_HIGH_SPEED_ROUTING_XREF"
+      ],
+      "confidence": "MEDIUM",
+      "electrical_status": "NETTED_AC_COUPLING",
+      "mechanical_status": "REFERENCE_PNP_POSITION_TRANSLATED",
+      "unresolved_blockers": [
+        "VALUES_TO_BE_RECONFIRMED_AGAINST_REV_A_SI_REQUIREMENTS"
+      ]
+    },
+    {
+      "component": "220n",
+      "refdes": "C53",
+      "footprint": "RevA_0201_2Pad",
+      "position_mm": {
+        "x": 10.143261399999998,
+        "y": 5.814288599999999
+      },
+      "rotation_deg": 270,
+      "source_evidence": [
+        "REFERENCE_SOURCE_NATIVE",
+        "LEAVES_HIGH_SPEED_ROUTING_XREF"
+      ],
+      "confidence": "MEDIUM",
+      "electrical_status": "NETTED_AC_COUPLING",
+      "mechanical_status": "REFERENCE_PNP_POSITION_TRANSLATED",
+      "unresolved_blockers": [
+        "VALUES_TO_BE_RECONFIRMED_AGAINST_REV_A_SI_REQUIREMENTS"
+      ]
+    },
+    {
+      "component": "220n",
+      "refdes": "C52",
+      "footprint": "RevA_0201_2Pad",
+      "position_mm": {
+        "x": 6.181445599999998,
+        "y": 6.5639188
+      },
+      "rotation_deg": 270,
+      "source_evidence": [
+        "REFERENCE_SOURCE_NATIVE",
+        "LEAVES_HIGH_SPEED_ROUTING_XREF"
+      ],
+      "confidence": "MEDIUM",
+      "electrical_status": "NETTED_AC_COUPLING",
+      "mechanical_status": "REFERENCE_PNP_POSITION_TRANSLATED",
+      "unresolved_blockers": [
+        "VALUES_TO_BE_RECONFIRMED_AGAINST_REV_A_SI_REQUIREMENTS"
+      ]
+    },
+    {
+      "component": "220n",
+      "refdes": "C50",
+      "footprint": "RevA_0201_2Pad",
+      "position_mm": {
+        "x": 5.419445599999998,
+        "y": 6.5639188
+      },
+      "rotation_deg": 270,
+      "source_evidence": [
+        "REFERENCE_SOURCE_NATIVE",
+        "LEAVES_HIGH_SPEED_ROUTING_XREF"
+      ],
+      "confidence": "MEDIUM",
+      "electrical_status": "NETTED_AC_COUPLING",
+      "mechanical_status": "REFERENCE_PNP_POSITION_TRANSLATED",
+      "unresolved_blockers": [
+        "VALUES_TO_BE_RECONFIRMED_AGAINST_REV_A_SI_REQUIREMENTS"
+      ]
+    },
+    {
+      "component": "220n",
+      "refdes": "C49",
+      "footprint": "RevA_0201_2Pad",
+      "position_mm": {
+        "x": 4.907534,
+        "y": 4.312183399999999
+      },
+      "rotation_deg": 270,
+      "source_evidence": [
+        "REFERENCE_SOURCE_NATIVE",
+        "LEAVES_HIGH_SPEED_ROUTING_XREF"
+      ],
+      "confidence": "MEDIUM",
+      "electrical_status": "NETTED_AC_COUPLING",
+      "mechanical_status": "REFERENCE_PNP_POSITION_TRANSLATED",
+      "unresolved_blockers": [
+        "VALUES_TO_BE_RECONFIRMED_AGAINST_REV_A_SI_REQUIREMENTS"
+      ]
+    },
+    {
+      "component": "220n",
+      "refdes": "C48",
+      "footprint": "RevA_0201_2Pad",
+      "position_mm": {
+        "x": 4.145534,
+        "y": 4.312183399999999
+      },
+      "rotation_deg": 270,
+      "source_evidence": [
+        "REFERENCE_SOURCE_NATIVE",
+        "LEAVES_HIGH_SPEED_ROUTING_XREF"
+      ],
+      "confidence": "MEDIUM",
+      "electrical_status": "NETTED_AC_COUPLING",
+      "mechanical_status": "REFERENCE_PNP_POSITION_TRANSLATED",
+      "unresolved_blockers": [
+        "VALUES_TO_BE_RECONFIRMED_AGAINST_REV_A_SI_REQUIREMENTS"
+      ]
+    },
+    {
+      "component": "SPI removable isolation",
+      "refdes": "RISO1",
+      "footprint": "RevA_0402_2Pad",
+      "position_mm": {
+        "x": 4.02,
+        "y": 11.7
+      },
+      "rotation_deg": 0,
+      "source_evidence": [
+        "ENGINEERING_ASSUMPTION",
+        "SERVICE_CONTRACT_REQUIREMENT"
+      ],
+      "confidence": "MEDIUM",
+      "electrical_status": "NETTED_CONTROLLER_TO_FLASH_SIDE",
+      "mechanical_status": "PLACED_FOR_ACCESS",
+      "unresolved_blockers": [
+        "FINAL_COMPONENT_STYLE_AND_SERVICE_CONNECTOR_SELECTION_PENDING"
+      ]
+    },
+    {
+      "component": "SPI removable isolation",
+      "refdes": "RISO2",
+      "footprint": "RevA_0402_2Pad",
+      "position_mm": {
+        "x": 4.02,
+        "y": 13.8
+      },
+      "rotation_deg": 0,
+      "source_evidence": [
+        "ENGINEERING_ASSUMPTION",
+        "SERVICE_CONTRACT_REQUIREMENT"
+      ],
+      "confidence": "MEDIUM",
+      "electrical_status": "NETTED_CONTROLLER_TO_FLASH_SIDE",
+      "mechanical_status": "PLACED_FOR_ACCESS",
+      "unresolved_blockers": [
+        "FINAL_COMPONENT_STYLE_AND_SERVICE_CONNECTOR_SELECTION_PENDING"
+      ]
+    },
+    {
+      "component": "SPI removable isolation",
+      "refdes": "RISO3",
+      "footprint": "RevA_0402_2Pad",
+      "position_mm": {
+        "x": 4.02,
+        "y": 15.9
+      },
+      "rotation_deg": 0,
+      "source_evidence": [
+        "ENGINEERING_ASSUMPTION",
+        "SERVICE_CONTRACT_REQUIREMENT"
+      ],
+      "confidence": "MEDIUM",
+      "electrical_status": "NETTED_CONTROLLER_TO_FLASH_SIDE",
+      "mechanical_status": "PLACED_FOR_ACCESS",
+      "unresolved_blockers": [
+        "FINAL_COMPONENT_STYLE_AND_SERVICE_CONNECTOR_SELECTION_PENDING"
+      ]
+    },
+    {
+      "component": "SPI removable isolation",
+      "refdes": "RISO4",
+      "footprint": "RevA_0402_2Pad",
+      "position_mm": {
+        "x": 4.02,
+        "y": 18.0
+      },
+      "rotation_deg": 0,
+      "source_evidence": [
+        "ENGINEERING_ASSUMPTION",
+        "SERVICE_CONTRACT_REQUIREMENT"
+      ],
+      "confidence": "MEDIUM",
+      "electrical_status": "NETTED_CONTROLLER_TO_FLASH_SIDE",
+      "mechanical_status": "PLACED_FOR_ACCESS",
+      "unresolved_blockers": [
+        "FINAL_COMPONENT_STYLE_AND_SERVICE_CONNECTOR_SELECTION_PENDING"
+      ]
+    },
+    {
+      "component": "Service/debug",
+      "refdes": "J3",
+      "footprint": "RevA_Service_2x5_1.27_PROVISIONAL",
+      "position_mm": {
+        "x": 4.019917,
+        "y": 4.1402
+      },
+      "rotation_deg": 0,
+      "source_evidence": [
+        "ENGINEERING_ASSUMPTION",
+        "SERVICE_CONTRACT"
+      ],
+      "confidence": "MEDIUM",
+      "electrical_status": "SPI_IS_FLASH_SIDE;UART_RST_NETTED;VREF_PENDING",
+      "mechanical_status": "PROVISIONAL_ACCESSIBLE_PLACEMENT",
+      "unresolved_blockers": [
+        "VREF_SENSE_SOURCE_NOT_BOUND",
+        "CONNECTOR_FORM_FACTOR_SELECTION_PENDING"
+      ]
+    },
+    {
+      "component": "12.1k",
+      "refdes": "R4",
+      "footprint": "RevA_0402_2Pad",
+      "position_mm": {
+        "x": 17.7,
+        "y": 13.0
+      },
+      "rotation_deg": 0,
+      "source_evidence": [
+        "AUTHORITATIVE_DATASHEET_VALUE"
+      ],
+      "confidence": "MEDIUM",
+      "electrical_status": "NETTED:ASM_REXT<->GND",
+      "mechanical_status": "PLACEMENT_STUDY",
+      "unresolved_blockers": []
+    },
+    {
+      "component": "100n",
+      "refdes": "CDEC1",
+      "footprint": "RevA_0402_2Pad",
+      "position_mm": {
+        "x": 12.0,
+        "y": 12.0
+      },
+      "rotation_deg": 0,
+      "source_evidence": [
+        "ENGINEERING_ASSUMPTION_REPRESENTATIVE"
+      ],
+      "confidence": "LOW",
+      "electrical_status": "NETTED:+1V05<->GND",
+      "mechanical_status": "PLACEMENT_STUDY",
+      "unresolved_blockers": [
+        "FULL_POWER_RAIL_POPULATION_INCOMPLETE"
+      ]
+    },
+    {
+      "component": "2.2u",
+      "refdes": "CDEC2",
+      "footprint": "RevA_0402_2Pad",
+      "position_mm": {
+        "x": 13.0,
+        "y": 12.0
+      },
+      "rotation_deg": 0,
+      "source_evidence": [
+        "REFERENCE_SOURCE_NATIVE_REPRESENTATIVE"
+      ],
+      "confidence": "MEDIUM",
+      "electrical_status": "NETTED:+1V05<->GND",
+      "mechanical_status": "PLACEMENT_STUDY",
+      "unresolved_blockers": [
+        "FULL_POWER_RAIL_POPULATION_INCOMPLETE"
+      ]
+    },
+    {
+      "component": "100n",
+      "refdes": "CDEC3",
+      "footprint": "RevA_0402_2Pad",
+      "position_mm": {
+        "x": 14.0,
+        "y": 12.0
+      },
+      "rotation_deg": 0,
+      "source_evidence": [
+        "ENGINEERING_ASSUMPTION_REPRESENTATIVE"
+      ],
+      "confidence": "LOW",
+      "electrical_status": "NETTED:+1V8<->GND",
+      "mechanical_status": "PLACEMENT_STUDY",
+      "unresolved_blockers": [
+        "FULL_POWER_RAIL_POPULATION_INCOMPLETE"
+      ]
+    },
+    {
+      "component": "100n",
+      "refdes": "CDEC4",
+      "footprint": "RevA_0402_2Pad",
+      "position_mm": {
+        "x": 15.0,
+        "y": 12.0
+      },
+      "rotation_deg": 0,
+      "source_evidence": [
+        "ENGINEERING_ASSUMPTION_REPRESENTATIVE"
+      ],
+      "confidence": "LOW",
+      "electrical_status": "NETTED:+3V3<->GND",
+      "mechanical_status": "PLACEMENT_STUDY",
+      "unresolved_blockers": [
+        "FULL_POWER_RAIL_POPULATION_INCOMPLETE"
+      ]
+    },
+    {
+      "component": "100n",
+      "refdes": "CDEC5",
+      "footprint": "RevA_0402_2Pad",
+      "position_mm": {
+        "x": 16.0,
+        "y": 12.0
+      },
+      "rotation_deg": 0,
+      "source_evidence": [
+        "ENGINEERING_ASSUMPTION_REPRESENTATIVE"
+      ],
+      "confidence": "LOW",
+      "electrical_status": "NETTED:+3V3A<->GND",
+      "mechanical_status": "PLACEMENT_STUDY",
+      "unresolved_blockers": [
+        "FULL_POWER_RAIL_POPULATION_INCOMPLETE"
+      ]
+    },
+    {
+      "component": "10k",
+      "refdes": "RFWP",
+      "footprint": "RevA_0402_2Pad",
+      "position_mm": {
+        "x": 19.3,
+        "y": 22.0
+      },
+      "rotation_deg": 90,
+      "source_evidence": [
+        "ENGINEERING_ASSUMPTION"
+      ],
+      "confidence": "LOW",
+      "electrical_status": "NETTED:FLASH_WP_N<->+3V3",
+      "mechanical_status": "PLACEMENT_STUDY",
+      "unresolved_blockers": []
+    },
+    {
+      "component": "10k",
+      "refdes": "RFHOLD",
+      "footprint": "RevA_0402_2Pad",
+      "position_mm": {
+        "x": 20.0,
+        "y": 22.0
+      },
+      "rotation_deg": 90,
+      "source_evidence": [
+        "ENGINEERING_ASSUMPTION"
+      ],
+      "confidence": "LOW",
+      "electrical_status": "NETTED:FLASH_HOLD_N<->+3V3",
+      "mechanical_status": "PLACEMENT_STUDY",
+      "unresolved_blockers": []
+    },
+    {
+      "component": "100n",
+      "refdes": "CF",
+      "footprint": "RevA_0402_2Pad",
+      "position_mm": {
+        "x": 21.1,
+        "y": 22.0
+      },
+      "rotation_deg": 90,
+      "source_evidence": [
+        "ENGINEERING_ASSUMPTION"
+      ],
+      "confidence": "LOW",
+      "electrical_status": "NETTED:+3V3<->GND",
+      "mechanical_status": "PLACEMENT_STUDY",
+      "unresolved_blockers": []
+    },
+    {
+      "component": "30p",
+      "refdes": "C77",
+      "footprint": "RevA_0402_2Pad",
+      "position_mm": {
+        "x": 7.183145399999999,
+        "y": 18.9861698
+      },
+      "rotation_deg": 90,
+      "source_evidence": [
+        "REFERENCE_SOURCE_NATIVE"
+      ],
+      "confidence": "MEDIUM",
+      "electrical_status": "NETTED:ASM_XI<->GND",
+      "mechanical_status": "PLACEMENT_STUDY",
+      "unresolved_blockers": []
+    },
+    {
+      "component": "30p",
+      "refdes": "C78",
+      "footprint": "RevA_0402_2Pad",
+      "position_mm": {
+        "x": 7.183120000000001,
+        "y": 17.494377
+      },
+      "rotation_deg": 270,
+      "source_evidence": [
+        "REFERENCE_SOURCE_NATIVE"
+      ],
+      "confidence": "MEDIUM",
+      "electrical_status": "NETTED:ASM_XO<->GND",
+      "mechanical_status": "PLACEMENT_STUDY",
+      "unresolved_blockers": []
+    },
+    {
+      "component": "25MHz crystal",
+      "refdes": "X1",
+      "footprint": "RevA_Crystal_4P_1.6x1.2",
+      "position_mm": {
+        "x": 5.787999599999997,
+        "y": 18.247283799999998
+      },
+      "rotation_deg": 90,
+      "source_evidence": [
+        "REFERENCE_SOURCE_NATIVE",
+        "AUTHORITATIVE_ASM2464PD_CRYSTAL_REQUIREMENTS"
+      ],
+      "confidence": "MEDIUM",
+      "electrical_status": "XI_XO_AND_GND_PINS_NETTED",
+      "mechanical_status": "REFERENCE_PNP_POSITION_TRANSLATED",
+      "unresolved_blockers": [
+        "EXACT_CRYSTAL_PART_NUMBER_AND_LOAD_CAPACITANCE_VALIDATION_PENDING"
+      ]
+    },
+    {
+      "component": "USB4 ESD function placeholder",
+      "refdes": "DUSB41",
+      "footprint": "ESD_2CH_SELECTION_PENDING",
+      "position_mm": {
+        "x": 6.0,
+        "y": 24.2
+      },
+      "rotation_deg": 0,
+      "source_evidence": [
+        "ENGINEERING_ASSUMPTION_REQUIREMENT"
+      ],
+      "confidence": "LOW",
+      "electrical_status": "SELECTION_PENDING_NOT_SERIES_ROUTED",
+      "mechanical_status": "FUNCTIONAL_PLACEMENT_STUDY",
+      "unresolved_blockers": [
+        "EXACT_LOW_CAPACITANCE_ESD_PART_AND_LAND_PATTERN_PENDING"
+      ]
+    },
+    {
+      "component": "USB4 ESD function placeholder",
+      "refdes": "DUSB42",
+      "footprint": "ESD_2CH_SELECTION_PENDING",
+      "position_mm": {
+        "x": 6.0,
+        "y": 25.0
+      },
+      "rotation_deg": 0,
+      "source_evidence": [
+        "ENGINEERING_ASSUMPTION_REQUIREMENT"
+      ],
+      "confidence": "LOW",
+      "electrical_status": "SELECTION_PENDING_NOT_SERIES_ROUTED",
+      "mechanical_status": "FUNCTIONAL_PLACEMENT_STUDY",
+      "unresolved_blockers": [
+        "EXACT_LOW_CAPACITANCE_ESD_PART_AND_LAND_PATTERN_PENDING"
+      ]
+    },
+    {
+      "component": "USB4 ESD function placeholder",
+      "refdes": "DUSB43",
+      "footprint": "ESD_2CH_SELECTION_PENDING",
+      "position_mm": {
+        "x": 6.0,
+        "y": 25.8
+      },
+      "rotation_deg": 0,
+      "source_evidence": [
+        "ENGINEERING_ASSUMPTION_REQUIREMENT"
+      ],
+      "confidence": "LOW",
+      "electrical_status": "SELECTION_PENDING_NOT_SERIES_ROUTED",
+      "mechanical_status": "FUNCTIONAL_PLACEMENT_STUDY",
+      "unresolved_blockers": [
+        "EXACT_LOW_CAPACITANCE_ESD_PART_AND_LAND_PATTERN_PENDING"
+      ]
+    },
+    {
+      "component": "USB4 ESD function placeholder",
+      "refdes": "DUSB44",
+      "footprint": "ESD_2CH_SELECTION_PENDING",
+      "position_mm": {
+        "x": 6.0,
+        "y": 26.6
+      },
+      "rotation_deg": 0,
+      "source_evidence": [
+        "ENGINEERING_ASSUMPTION_REQUIREMENT"
+      ],
+      "confidence": "LOW",
+      "electrical_status": "SELECTION_PENDING_NOT_SERIES_ROUTED",
+      "mechanical_status": "FUNCTIONAL_PLACEMENT_STUDY",
+      "unresolved_blockers": [
+        "EXACT_LOW_CAPACITANCE_ESD_PART_AND_LAND_PATTERN_PENDING"
+      ]
+    },
+    {
+      "component": "USB2 ESD function placeholder",
+      "refdes": "DUSB2",
+      "footprint": "ESD_2CH_SELECTION_PENDING",
+      "position_mm": {
+        "x": 8.0,
+        "y": 27.0
+      },
+      "rotation_deg": 0,
+      "source_evidence": [
+        "ENGINEERING_ASSUMPTION_REQUIREMENT"
+      ],
+      "confidence": "LOW",
+      "electrical_status": "SELECTION_PENDING_NOT_SERIES_ROUTED",
+      "mechanical_status": "FUNCTIONAL_PLACEMENT_STUDY",
+      "unresolved_blockers": [
+        "EXACT_ESD_PART_PENDING"
+      ]
+    }
+  ],
+  "high_speed_domains": {
+    "USB4": {
+      "target_impedance_ohm": null,
+      "actual_solved_geometry": null,
+      "layer": null,
+      "pairs": [
+        "USB4_UTX0",
+        "USB4_URX0",
+        "USB4_UTX1",
+        "USB4_URX1"
+      ],
+      "p_length_mm": null,
+      "n_length_mm": null,
+      "p_n_geometric_delta_mm": null,
+      "via_count": null,
+      "reference_plane": "PENDING_STACKUP",
+      "routing_status": "LOGICAL_NETTED_UNROUTED",
+      "evidence_source": [
+        "AUTHORITATIVE_PINOUTS",
+        "REFERENCE_TOPOLOGY_WHERE_NOTED"
+      ],
+      "fabrication_readiness": "BLOCKED_PENDING_STACKUP_AND_FIELD_SOLVER"
+    },
+    "PCIe": {
+      "target_impedance_ohm": null,
+      "actual_solved_geometry": null,
+      "layer": null,
+      "pairs": [
+        "PCIE_TX0",
+        "PCIE_RX0",
+        "PCIE_TX1",
+        "PCIE_RX1",
+        "PCIE_TX2",
+        "PCIE_RX2",
+        "PCIE_TX3",
+        "PCIE_RX3"
+      ],
+      "p_length_mm": null,
+      "n_length_mm": null,
+      "p_n_geometric_delta_mm": null,
+      "via_count": null,
+      "reference_plane": "PENDING_STACKUP",
+      "routing_status": "LOGICAL_NETTED_UNROUTED",
+      "evidence_source": [
+        "AUTHORITATIVE_PINOUTS",
+        "REFERENCE_TOPOLOGY_WHERE_NOTED"
+      ],
+      "fabrication_readiness": "BLOCKED_PENDING_STACKUP_AND_FIELD_SOLVER"
+    },
+    "USB2": {
+      "target_impedance_ohm": null,
+      "actual_solved_geometry": null,
+      "layer": null,
+      "pairs": null,
+      "p_length_mm": null,
+      "n_length_mm": null,
+      "p_n_geometric_delta_mm": null,
+      "via_count": null,
+      "reference_plane": "PENDING_STACKUP",
+      "routing_status": "LOGICAL_NETTED_UNROUTED",
+      "evidence_source": [
+        "AUTHORITATIVE_PINOUTS",
+        "REFERENCE_TOPOLOGY_WHERE_NOTED"
+      ],
+      "fabrication_readiness": "BLOCKED_PENDING_STACKUP_AND_FIELD_SOLVER"
+    }
+  },
+  "service_contract": {
+    "pins": {
+      "1": "GND",
+      "2": "VREF_SENSE",
+      "3": "ASM_UART_TX",
+      "4": "ASM_UART_RX",
+      "5": "ASM_RST_N",
+      "6": "ASM_SPI_CS_N_FLASH",
+      "7": "ASM_SPI_CLK_FLASH",
+      "8": "ASM_SPI_DI_FLASH",
+      "9": "ASM_SPI_DO_FLASH",
+      "10": "GND"
+    },
+    "programmer_attachment": "FLASH_SIDE_OF_RISO1_RISO4",
+    "reset_grants_spi_bus_ownership": false,
+    "asm_reset_tristate_behavior": "UNRESOLVED"
+  },
+  "first_cycle_blockers": [
+    "FABRICATION_STACKUP_UNSELECTED",
+    "FIELD_SOLVER_NOT_RUN",
+    "KICAD_PRODUCTION_DIFFPAIR_RULES_NOT_LOCKED",
+    "EXACT_LOTES_APCI0113_PRODUCT_DRAWING_LAND_PATTERN_NOT_INGESTED",
+    "COMPLETE_ASM_BGA_FAB_LAND_PATTERN_NOT_LOCKED",
+    "USB4_USB2_ESD_PART_SELECTION_PENDING",
+    "FULL_POWER_RAIL_SCHEMATIC_AND_DECOUPLING_POPULATION_INCOMPLETE",
+    "VREF_SENSE_BINDING_UNRESOLVED"
+  ]
+}

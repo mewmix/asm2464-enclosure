@@ -1,0 +1,29 @@
+{
+  "passed": true,
+  "fabrication_ready": false,
+  "bga_ball_count": 273,
+  "major_anchors": {
+    "U2": [
+      13.6672574,
+      14.8704808
+    ],
+    "J1": [
+      11.0699804,
+      29.187267
+    ],
+    "J2": [
+      11.0238794,
+      4.6976538
+    ],
+    "U31": [
+      20.9301842,
+      20.2771502
+    ]
+  },
+  "required_high_speed_nets": 28,
+  "routed_segments": 0,
+  "routing_vias": 0,
+  "kicad_cli": {
+    "status": "BLOCKED_KICAD_CLI_UNAVAILABLE"
+  }
+}
