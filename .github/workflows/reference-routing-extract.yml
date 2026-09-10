@@ -63,12 +63,13 @@ jobs:
           wc -c "$ROOT/Nets6/Data.dat" "$ROOT/Tracks6/Data.dat" "$ROOT/Vias6/Data.dat" "$ROOT/DifferentialPairs6/Data.dat" \
             | tee native-stream-sizes.txt
 
-      - name: Extract per-net segment via and layer metrics
+      - name: Extract per-net segment via layer and source-native pair metrics
         shell: bash
         run: |
           set -euo pipefail
           PCB_OUT="$(cat /tmp/reference-routing/converted-pcb-path.txt)"
           python3 scripts/extract_reference_routing.py "/tmp/reference-routing/$PCB_OUT" \
+            --native-pairs /tmp/reference-routing/native-differential-pairs-ascii.txt \
             --output /tmp/reference-routing/reference-routing-report.json
           python3 - <<'PY'
           import json
@@ -77,13 +78,27 @@ jobs:
           r=json.loads(p.read_text())
           assert r['status']=='DIAGNOSTIC_CONVERTED_REFERENCE_NOT_FABRICATION_AUTHORITY'
           assert r['net_count_with_routing'] > 0
+          assert r['pair_membership_evidence'] == 'ALTIUM_DIFFERENTIALPAIRS6'
+          assert r['candidate_pair_count'] == 22
+          assert r['pads_with_nets_seen'] > 0
+          assert all(x['routing_join_status'] == 'JOINED' for x in r['candidate_high_speed_pairs'])
           print(json.dumps({
               'routed_nets': r['net_count_with_routing'],
               'modules_seen': r['module_count_seen'],
-              'high_speed_candidates': r['high_speed_candidate_count'],
-              'candidate_pairs': r['candidate_pair_count'],
-              'candidate_names': [x['name'] for x in r['candidate_high_speed_nets']],
-              'pair_bases': [x['pair_base'] for x in r['candidate_high_speed_pairs']],
+              'pads_with_nets_seen': r['pads_with_nets_seen'],
+              'pair_evidence': r['pair_membership_evidence'],
+              'pairs': [
+                  {
+                      'name': x['pair_base'],
+                      'p_endpoints': x['positive_endpoints'],
+                      'n_endpoints': x['negative_endpoints'],
+                      'p_length_mm': x['positive_segment_length_mm'],
+                      'n_length_mm': x['negative_segment_length_mm'],
+                      'p_vias': x['positive_vias'],
+                      'n_vias': x['negative_vias'],
+                  }
+                  for x in r['candidate_high_speed_pairs']
+              ],
           }, indent=2))
           PY
 
