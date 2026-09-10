@@ -1,0 +1,90 @@
+name: Extract reference PCB routing evidence
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - agent/mandatory-asm-cosimulation
+    paths:
+      - '.github/workflows/reference-routing-extract.yml'
+      - 'scripts/extract_reference_routing.py'
+      - 'hardware/rev-a/routing.json'
+      - 'reference/leaves232-b2/routing-evidence.json'
+
+permissions:
+  contents: read
+
+jobs:
+  extract-routing:
+    runs-on: ubuntu-latest
+    env:
+      LEAVES_COMMIT: 8b7a5b2e510b9e8b6a98e5ba4e491064da3b950c
+      CONVERTER_COMMIT: e7be475c364ede8faf9e9e9efb95c18e9243b3ba
+      PCB_REL: ASM2464PD DEMO Board B2 [Altium Designer]/ASM2464PD - B2 Sample.PcbDoc
+    steps:
+      - name: Check out enclosure model
+        uses: actions/checkout@v4
+
+      - name: Fetch pinned public Altium source and pinned converter
+        shell: bash
+        run: |
+          set -euo pipefail
+          git init /tmp/leaves
+          git -C /tmp/leaves remote add origin https://github.com/Leaves232/2230-USB4-SSD-Enclosure-Design.git
+          git -C /tmp/leaves fetch --depth=1 origin "$LEAVES_COMMIT"
+          git -C /tmp/leaves checkout --detach FETCH_HEAD
+          test "$(git -C /tmp/leaves rev-parse HEAD)" = "$LEAVES_COMMIT"
+
+          git clone --filter=blob:none https://github.com/thesourcerer8/altium2kicad.git /tmp/altium2kicad
+          git -C /tmp/altium2kicad checkout --detach "$CONVERTER_COMMIT"
+          test "$(git -C /tmp/altium2kicad rev-parse HEAD)" = "$CONVERTER_COMMIT"
+
+          mkdir -p /tmp/reference-routing
+          cp "/tmp/leaves/$PCB_REL" '/tmp/reference-routing/ASM2464PD - B2 Sample.PcbDoc'
+          sha256sum '/tmp/reference-routing/ASM2464PD - B2 Sample.PcbDoc' | tee /tmp/reference-routing/source.sha256
+
+      - name: Unpack and convert diagnostic PCB
+        shell: bash
+        working-directory: /tmp/reference-routing
+        run: |
+          set -euo pipefail
+          perl /tmp/altium2kicad/unpack.pl 'ASM2464PD - B2 Sample.PcbDoc' | tee unpack.log
+          perl /tmp/altium2kicad/convertpcb.pl | tee convert.log
+          find . -maxdepth 3 -type f -name '*.kicad_pcb' -print | sort | tee converted-files.txt
+          PCB_OUT="$(find . -maxdepth 3 -type f -name '*.kicad_pcb' ! -name 'wrlshapes.kicad_pcb' -print | head -n 1)"
+          test -n "$PCB_OUT"
+          printf '%s\n' "$PCB_OUT" > converted-pcb-path.txt
+
+      - name: Extract per-net segment via and layer metrics
+        shell: bash
+        run: |
+          set -euo pipefail
+          PCB_OUT="$(cat /tmp/reference-routing/converted-pcb-path.txt)"
+          python3 scripts/extract_reference_routing.py "/tmp/reference-routing/$PCB_OUT" \
+            --output /tmp/reference-routing/reference-routing-report.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('/tmp/reference-routing/reference-routing-report.json')
+          r=json.loads(p.read_text())
+          assert r['status']=='DIAGNOSTIC_CONVERTED_REFERENCE_NOT_FABRICATION_AUTHORITY'
+          assert r['net_count_with_routing'] > 0
+          print(json.dumps({
+              'routed_nets': r['net_count_with_routing'],
+              'high_speed_candidates': r['high_speed_candidate_count'],
+              'candidate_names': [x['name'] for x in r['candidate_high_speed_nets']],
+          }, indent=2))
+          PY
+
+      - name: Upload diagnostic evidence only
+        uses: actions/upload-artifact@v4
+        with:
+          name: reference-routing-extraction
+          path: |
+            /tmp/reference-routing/reference-routing-report.json
+            /tmp/reference-routing/source.sha256
+            /tmp/reference-routing/unpack.log
+            /tmp/reference-routing/convert.log
+            /tmp/reference-routing/converted-files.txt
+          if-no-files-found: error
+          retention-days: 7
