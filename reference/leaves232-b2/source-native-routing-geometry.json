@@ -1,0 +1,86 @@
+{
+  "revision": "leaves232-b2-source-native-routing-1",
+  "status": "REFERENCE_GEOMETRY_ONLY_NOT_REV_A_TARGETS",
+  "source": {
+    "repository": "Leaves232/2230-USB4-SSD-Enclosure-Design",
+    "commit": "8b7a5b2e510b9e8b6a98e5ba4e491064da3b950c",
+    "pcb_path": "ASM2464PD DEMO Board B2 [Altium Designer]/ASM2464PD - B2 Sample.PcbDoc",
+    "pcb_sha256": "641ef37a898217b3b2591e653d212322ea6044bb661b0b2a267a3ef24dfb8d93",
+    "license": "MIT"
+  },
+  "decoder": {
+    "repository": "thesourcerer8/altium2kicad",
+    "commit": "e7be475c364ede8faf9e9e9efb95c18e9243b3ba",
+    "track_fields": "Tracks6 offsets taken from pinned HandleTrack implementation",
+    "arc_fields": "Arcs6 offsets taken from pinned HandleArc implementation",
+    "via_fields": "Vias6 net association taken from pinned converter implementation"
+  },
+  "ci_evidence": {
+    "workflow": ".github/workflows/source-native-routing-extract.yml",
+    "run_id": 34422933694,
+    "artifact_id": 10131569159,
+    "artifact_name": "source-native-routing-geometry",
+    "artifact_zip_sha256": "06f6727271205e4e8e5ecaede45dfa1c9685581a3a44ea245b51c6063f771429",
+    "high_speed_net_count": 44,
+    "high_speed_arc_count": 416,
+    "converted_crosscheck": {
+      "checked_high_speed_nets": 44,
+      "max_abs_straight_length_delta_mm": 0.000027,
+      "max_via_count_delta": 0,
+      "interpretation": "Converted KiCad is an independent diagnostic cross-check only; source-native Altium records remain the net/geometry evidence."
+    }
+  },
+  "reference_widths_mm": [0.08128, 0.110744],
+  "observed_domains": {
+    "USB4": {
+      "path_count": 4,
+      "conductor_centerline_range_mm": [8.221736, 10.369975],
+      "pair_centerline_delta_range_mm": [0.005645, 0.074974],
+      "observed_matched_via_counts": [[0, 0], [2, 2]],
+      "transfer_status": "REFERENCE_GEOMETRY_ONLY_NOT_REV_A_TARGETS"
+    },
+    "PCIE": {
+      "path_count": 9,
+      "conductor_centerline_range_mm": [9.82449, 37.750298],
+      "pair_centerline_delta_range_mm": [0.024424, 0.426121],
+      "observed_matched_via_counts": [[1, 1]],
+      "transfer_status": "REFERENCE_GEOMETRY_ONLY_NOT_REV_A_TARGETS"
+    },
+    "USB2": {
+      "path_count": 1,
+      "conductor_centerline_range_mm": [19.349425, 19.485796],
+      "pair_centerline_delta_mm": 0.136371,
+      "observed_via_counts": [2, 0],
+      "transfer_status": "REFERENCE_GEOMETRY_ONLY_NOT_REV_A_TARGETS"
+    }
+  },
+  "paths": [
+    {"name":"PCIE_TX0","p_mm":10.238232,"n_mm":10.31172,"delta_mm":0.073488,"p_vias":1,"n_vias":1},
+    {"name":"PCIE_TX1","p_mm":9.82449,"n_mm":9.848914,"delta_mm":0.024424,"p_vias":1,"n_vias":1},
+    {"name":"PCIE_TX2","p_mm":14.140266,"n_mm":14.509295,"delta_mm":0.369029,"p_vias":1,"n_vias":1},
+    {"name":"PCIE_TX3","p_mm":15.55685,"n_mm":15.941154,"delta_mm":0.384304,"p_vias":1,"n_vias":1},
+    {"name":"PCIE_RX0","p_mm":10.905023,"n_mm":11.322017,"delta_mm":0.416994,"p_vias":1,"n_vias":1},
+    {"name":"PCIE_RX1","p_mm":9.882166,"n_mm":10.269385,"delta_mm":0.387219,"p_vias":1,"n_vias":1},
+    {"name":"PCIE_RX2","p_mm":12.221055,"n_mm":12.647176,"delta_mm":0.426121,"p_vias":1,"n_vias":1},
+    {"name":"PCIE_RX3","p_mm":18.176802,"n_mm":18.46456,"delta_mm":0.287758,"p_vias":1,"n_vias":1},
+    {"name":"PCIE_REFCLK","p_mm":37.448313,"n_mm":37.750298,"delta_mm":0.301985,"p_vias":1,"n_vias":1},
+    {"name":"USB4_UTX0","p_mm":8.227381,"n_mm":8.221736,"delta_mm":0.005645,"p_vias":0,"n_vias":0},
+    {"name":"USB4_UTX1","p_mm":9.057983,"n_mm":9.094038,"delta_mm":0.036055,"p_vias":2,"n_vias":2},
+    {"name":"USB4_URX0","p_mm":10.369975,"n_mm":10.315629,"delta_mm":0.054346,"p_vias":2,"n_vias":2},
+    {"name":"USB4_URX1","p_mm":8.51692,"n_mm":8.591894,"delta_mm":0.074974,"p_vias":0,"n_vias":0},
+    {"name":"USB2_UD","p_mm":19.485796,"n_mm":19.349425,"delta_mm":0.136371,"p_vias":2,"n_vias":0}
+  ],
+  "fabrication_corroboration": {
+    "gerber_files_present": true,
+    "top_copper": "ASM2464PD - B2 Sample.GTL",
+    "bottom_copper": "ASM2464PD - B2 Sample.GBL",
+    "net_associated_fabrication_netlist_found": false,
+    "status": "NO_IPC356_OR_EQUIVALENT_NET_ASSOCIATED_FAB_NETLIST_FOUND",
+    "note": "Gerbers corroborate fabricated copper availability but are not used to assign per-net route lengths because no net-associated fabrication netlist was found in the pinned fabrication directory."
+  },
+  "interpretation": {
+    "delta_mm": "Physical copper-centerline difference only; not electrical timing skew.",
+    "target_length": "Any Altium TARGETLENGTH metadata is retained as metadata only and is not substituted for decoded copper geometry.",
+    "rev_a": "No B2 width, length, via count, or pair delta becomes a Rev-A production requirement without an explicitly selected Rev-A stackup and authoritative electrical constraint source."
+  }
+}
