@@ -1,8 +1,8 @@
 """Evidence-bound board routing/topology model.
 
 This module intentionally models only facts and constraints supported by repository
-evidence. Reference-board topology is checked separately from Rev-A copper geometry:
-a recovered reference path does not make the new board routed or fabrication-ready.
+evidence. Reference-board topology/geometry is checked separately from Rev-A copper:
+a recovered B2 route never makes the new board routed or fabrication-ready.
 """
 from __future__ import annotations
 
@@ -14,6 +14,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 ROUTING_PATH = ROOT / "hardware/rev-a/routing.json"
 REFERENCE_XREF_PATH = ROOT / "reference/leaves232-b2/high-speed-routing-xref.json"
+REFERENCE_GEOMETRY_PATH = ROOT / "reference/leaves232-b2/source-native-routing-geometry.json"
+PINNED_B2_PCBDOC_SHA256 = "641ef37a898217b3b2591e653d212322ea6044bb661b0b2a267a3ef24dfb8d93"
+REFERENCE_ONLY = "REFERENCE_GEOMETRY_ONLY_NOT_REV_A_TARGETS"
 
 EXPECTED_ASM_BALLS = {
     "ASM_UART_TX": "B21",
@@ -42,6 +45,12 @@ EXPECTED_REFERENCE_PAIRS = {
     "PET0", "PET0U", "PET1", "PET1U", "PET2", "PET2U", "PET3", "PET3U",
     "PER0", "PER1", "PER2", "PER3", "RefCLK",
 }
+EXPECTED_REFERENCE_WIDTHS_MM = [0.08128, 0.110744]
+EXPECTED_PATHS = {
+    "PCIE_TX0", "PCIE_TX1", "PCIE_TX2", "PCIE_TX3",
+    "PCIE_RX0", "PCIE_RX1", "PCIE_RX2", "PCIE_RX3", "PCIE_REFCLK",
+    "USB4_UTX0", "USB4_UTX1", "USB4_URX0", "USB4_URX1", "USB2_UD",
+}
 
 
 def load(path: Path | None = None) -> dict:
@@ -50,6 +59,10 @@ def load(path: Path | None = None) -> dict:
 
 def load_reference_xref(path: Path | None = None) -> dict:
     return json.loads((path or REFERENCE_XREF_PATH).read_text())
+
+
+def load_reference_geometry(path: Path | None = None) -> dict:
+    return json.loads((path or REFERENCE_GEOMETRY_PATH).read_text())
 
 
 def sha256(path: Path | None = None) -> str:
@@ -73,7 +86,7 @@ def chord_mm(contract: dict, a: str, b: str) -> float:
 def _validate_reference_xref(xref: dict, errors: list[str], warnings: list[str]) -> None:
     if xref.get("pair_membership_evidence") != "ALTIUM_DIFFERENTIALPAIRS6":
         errors.append("reference differential-pair membership is not source-native Altium evidence")
-    if xref.get("source", {}).get("pcbdoc_sha256") != "641ef37a898217b3b2591e653d212322ea6044bb661b0b2a267a3ef24dfb8d93":
+    if xref.get("source", {}).get("pcbdoc_sha256") != PINNED_B2_PCBDOC_SHA256:
         errors.append("reference PcbDoc hash drifted from the pinned B2 source")
 
     pairs = {p.get("name"): p for p in xref.get("pairs", [])}
@@ -123,9 +136,71 @@ def _validate_reference_xref(xref: dict, errors: list[str], warnings: list[str])
         errors.append("reference xref must explicitly reject interpreting converted segment delta as skew")
 
 
-def validate(contract: dict | None = None, reference_xref: dict | None = None) -> dict:
+def _validate_reference_geometry(geometry: dict, errors: list[str]) -> None:
+    if geometry.get("status") != REFERENCE_ONLY:
+        errors.append("source-native B2 geometry must remain reference-only, not a Rev-A target")
+    if geometry.get("source", {}).get("pcb_sha256") != PINNED_B2_PCBDOC_SHA256:
+        errors.append("source-native geometry PcbDoc hash drifted from the pinned B2 source")
+    ci = geometry.get("ci_evidence", {})
+    if ci.get("high_speed_net_count") != 44:
+        errors.append("source-native B2 geometry must contain 44 high-speed nets")
+    if ci.get("high_speed_arc_count") != 416:
+        errors.append("source-native B2 geometry must contain the observed 416 high-speed arcs")
+    cross = ci.get("converted_crosscheck", {})
+    if cross.get("checked_high_speed_nets") != 44:
+        errors.append("source-native geometry cross-check must cover all 44 high-speed nets")
+    if float(cross.get("max_abs_straight_length_delta_mm", 1.0)) > 0.00005:
+        errors.append("source-native/converted straight-geometry cross-check exceeded 0.00005 mm")
+    if cross.get("max_via_count_delta") != 0:
+        errors.append("source-native/converted via-count cross-check drifted")
+    if geometry.get("reference_widths_mm") != EXPECTED_REFERENCE_WIDTHS_MM:
+        errors.append("observed B2 high-speed width set drifted")
+    if {p.get("name") for p in geometry.get("paths", [])} != EXPECTED_PATHS:
+        errors.append("source-native B2 end-to-end path set is incomplete")
+    fab = geometry.get("fabrication_corroboration", {})
+    if fab.get("net_associated_fabrication_netlist_found") is not False:
+        errors.append("fabrication-netlist status changed; re-audit Gerber/net association before promotion")
+    if fab.get("status") != "NO_IPC356_OR_EQUIVALENT_NET_ASSOCIATED_FAB_NETLIST_FOUND":
+        errors.append("fabrication corroboration limitation must remain explicit")
+
+
+def _validate_reference_geometry_binding(contract: dict, geometry: dict, errors: list[str]) -> None:
+    binding = contract.get("reference_source_native_geometry", {})
+    if binding.get("source") != "reference/leaves232-b2/source-native-routing-geometry.json":
+        errors.append("routing contract does not bind the source-native B2 geometry artifact")
+    if binding.get("status") != REFERENCE_ONLY:
+        errors.append("routing contract must label source-native geometry as reference-only")
+    if binding.get("high_speed_net_count") != 44 or binding.get("high_speed_arc_count") != 416:
+        errors.append("routing contract source-native geometry counts drifted")
+    if binding.get("source_pcb_sha256") != PINNED_B2_PCBDOC_SHA256:
+        errors.append("routing contract source-native geometry hash drifted")
+    if binding.get("reference_widths_mm") != EXPECTED_REFERENCE_WIDTHS_MM:
+        errors.append("routing contract reference width set drifted")
+
+    observed = geometry.get("observed_domains", {})
+    for domain in HIGH_SPEED_DOMAINS:
+        d = contract.get("high_speed_domains", {}).get(domain, {})
+        ref = d.get("observed_reference_geometry", {})
+        source = observed.get(domain, {})
+        if ref.get("transfer_status") != REFERENCE_ONLY:
+            errors.append(f"{domain} observed B2 geometry must remain reference-only")
+        if ref.get("source") != "reference/leaves232-b2/source-native-routing-geometry.json":
+            errors.append(f"{domain} observed B2 geometry source is not pinned")
+        for key in ("conductor_centerline_range_mm", "pair_centerline_delta_range_mm"):
+            if ref.get(key) != source.get(key):
+                errors.append(f"{domain} observed reference {key} drifted from source-native evidence")
+        if ref.get("widths_mm") != geometry.get("reference_widths_mm"):
+            errors.append(f"{domain} observed reference widths drifted from source-native evidence")
+
+
+def validate(
+    contract: dict | None = None,
+    reference_xref: dict | None = None,
+    reference_geometry: dict | None = None,
+) -> dict:
     c = contract or load()
     xref = reference_xref or load_reference_xref()
+    geometry = reference_geometry or load_reference_geometry()
     errors: list[str] = []
     warnings: list[str] = []
 
@@ -182,6 +257,9 @@ def validate(contract: dict | None = None, reference_xref: dict | None = None) -
     if service.get("2") != "VREF_SENSE":
         errors.append("service connector pin 2 must remain VREF_SENSE")
 
+    if c.get("reference_manufacturing", {}).get("transfer_status") != "REFERENCE_ONLY_NOT_OUR_FAB_STACKUP":
+        errors.append("B2 manufacturing stackup must remain reference-only until Rev-A stackup is explicitly selected")
+
     hs = c.get("high_speed_domains", {})
     for domain in HIGH_SPEED_DOMAINS:
         d = hs.get(domain)
@@ -205,6 +283,8 @@ def validate(contract: dict | None = None, reference_xref: dict | None = None) -
                 errors.append(f"{domain} missing routing constraint {required}")
 
     _validate_reference_xref(xref, errors, warnings)
+    _validate_reference_geometry(geometry, errors)
+    _validate_reference_geometry_binding(c, geometry, errors)
 
     lower_bounds = {}
     for key, endpoints in {
@@ -223,7 +303,9 @@ def validate(contract: dict | None = None, reference_xref: dict | None = None) -
         "warnings": warnings,
         "routing_sha256": sha256() if contract is None else None,
         "reference_pair_count": len(xref.get("pairs", [])),
+        "reference_high_speed_net_count": geometry.get("ci_evidence", {}).get("high_speed_net_count"),
+        "reference_high_speed_arc_count": geometry.get("ci_evidence", {}).get("high_speed_arc_count"),
         "reference_topology_domains": [d.get("domain") for d in xref.get("reference_topology", [])],
         "placement_chord_lower_bounds_mm": lower_bounds,
-        "note": "Chord values are geometric lower bounds, not routed trace lengths; reference converted segment deltas are not electrical skew.",
+        "note": "Chord values are geometric lower bounds, not routed trace lengths; B2 copper-centerline deltas are reference geometry, not Rev-A electrical skew targets.",
     }
