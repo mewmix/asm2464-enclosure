@@ -60,8 +60,12 @@ jobs:
           cp "$ROOT/Nets6/Data.dat.txt" native-nets.txt
           cp "$ROOT/Tracks6/Data.dat.txt" native-tracks.txt
           cp "$ROOT/Vias6/Data.dat.txt" native-vias.txt
-          cp "$ROOT/Pads6/Data.dat.txt" native-pads.txt
           cp "$ROOT/Components6/Data.dat.txt" native-components.txt
+          # This converter decodes Pads6 directly into the KiCad PCB but does not emit
+          # Pads6/Data.dat.txt. Preserve raw-string/hex views instead of assuming one.
+          strings -a -n 2 "$ROOT/Pads6/Data.dat" > native-pads-ascii.txt || true
+          strings -a -el -n 2 "$ROOT/Pads6/Data.dat" > native-pads-utf16le.txt || true
+          xxd -g 1 "$ROOT/Pads6/Data.dat" > native-pads.hex.txt
           strings -a -n 2 "$ROOT/DifferentialPairs6/Data.dat" > native-differential-pairs-ascii.txt || true
           strings -a -el -n 2 "$ROOT/DifferentialPairs6/Data.dat" > native-differential-pairs-utf16le.txt || true
           xxd -g 1 "$ROOT/DifferentialPairs6/Data.dat" > native-differential-pairs.hex.txt
@@ -120,8 +124,10 @@ jobs:
             /tmp/reference-routing/native-nets.txt
             /tmp/reference-routing/native-tracks.txt
             /tmp/reference-routing/native-vias.txt
-            /tmp/reference-routing/native-pads.txt
             /tmp/reference-routing/native-components.txt
+            /tmp/reference-routing/native-pads-ascii.txt
+            /tmp/reference-routing/native-pads-utf16le.txt
+            /tmp/reference-routing/native-pads.hex.txt
             /tmp/reference-routing/native-differential-pairs-ascii.txt
             /tmp/reference-routing/native-differential-pairs-utf16le.txt
             /tmp/reference-routing/native-differential-pairs.hex.txt
