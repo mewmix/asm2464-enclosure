@@ -1,0 +1,71 @@
+{
+  "source_repository": "Leaves232/2230-USB4-SSD-Enclosure-Design",
+  "source_commit": "8b7a5b2e510b9e8b6a98e5ba4e491064da3b950c",
+  "classification": "REFERENCE_PCB_AND_FAB_OUTPUT",
+  "board_manufacturing": {
+    "material": "FR-4",
+    "layers": 4,
+    "thickness_mm": 1.6,
+    "stackup_code": "04161H02-1080",
+    "outer_copper_oz": 1.0,
+    "inner_copper_oz": 0.5,
+    "minimum_trace_space_mil": [3.5, 3.5],
+    "minimum_via_mm": 0.2,
+    "via_in_pad": false,
+    "buried_vias": false,
+    "impedance_control_required": true,
+    "top_bottom_differential_impedance_ohms_approx": 85,
+    "surface_finish": "ENIG",
+    "laminate_tg": "TG150",
+    "evidence": "REFERENCE_PCB",
+    "source": "Leaves232 README PCB Manufacturing section"
+  },
+  "altium_rule_export": {
+    "source_path": "Fabrication Files for DEMO Board B2/ASM2464PD - B2 Sample.RUL",
+    "raw_rules": [
+      {
+        "kind": "Clearance",
+        "name": "85ohm",
+        "scope": "Board",
+        "minimum_raw": 3.5,
+        "units": "UNSPECIFIED_IN_RUL"
+      },
+      {
+        "kind": "Width",
+        "name": "50ohm",
+        "scope": "Board",
+        "minimum_raw": 3.2,
+        "units": "UNSPECIFIED_IN_RUL"
+      },
+      {
+        "kind": "Clearance",
+        "name": "Clearance",
+        "scope": "Board",
+        "minimum_raw": 3.5,
+        "units": "UNSPECIFIED_IN_RUL"
+      },
+      {
+        "kind": "Width",
+        "name": "Width",
+        "scope": "Board",
+        "minimum_raw": 3.2,
+        "units": "UNSPECIFIED_IN_RUL"
+      }
+    ],
+    "evidence": "FAB_OUTPUT"
+  },
+  "interpretation": {
+    "known": [
+      "Reference production board is four-layer 1.6 mm FR-4.",
+      "Reference author requires approximately 85 ohm differential impedance on top and bottom high-speed routing.",
+      "Reference manufacturing profile names Huaqiu stackup 04161H02-1080.",
+      "Reference rule export contains named 85ohm and 50ohm board rules."
+    ],
+    "not_yet_proven": [
+      "Exact layer-by-layer dielectric thickness and Dk for 04161H02-1080.",
+      "Whether raw RUL numeric values are mil, mm, or internal Altium display units.",
+      "Exact USB4 and PCIe net names, pair membership, routed lengths, skew, via counts, and layer transitions.",
+      "That the reference geometry can be copied unchanged to another fabricator or stackup."
+    ]
+  }
+}
