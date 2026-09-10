@@ -14,6 +14,7 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
 from simulation.board.config import sha256
 from simulation.board.routing import validate as validate_routing
+from simulation.board.kicad_constraints import validate as validate_kicad_constraints
 from simulation.board.traces import compare
 from simulation.asm2464.adapter.stock import committed_code,execute_code,full_spi
 from simulation.asm2464.adapter.route import verify_source_fixture
@@ -31,6 +32,7 @@ def main():
     subprocess.run([sys.executable,'scripts/import_asm2464_sim.py'],cwd=ROOT,check=True)
     report={'hardware_touched':False,'fabrication_ready':False,'board_config_sha256':sha256()}
     report['routing']=validate_routing()
+    report['kicad_constraints']=validate_kicad_constraints()
     code=execute_code(committed_code(args.source)) if args.source else {'status':'BLOCKED_STOCK_CODE_ARTIFACT_UNAVAILABLE'}
     report['stock']={'code_reconstruction':code,'full_spi':full_spi(args.stock_image)}
     report['stock_route_provenance']=verify_source_fixture(args.source) if args.source else 'BLOCKED_SOURCE_CHECKOUT_UNAVAILABLE'
@@ -83,7 +85,12 @@ def main():
     else:report['cad']={'status':'BLOCKED_CADQUERY_UNAVAILABLE','historical_review':'mechanical/rev-a/review; not regenerated'}
     report['rtl']='BLOCKED_SOURCE_ABSENT'
     report['differential']='BLOCKED_SECOND_EXECUTION_BACKEND_ABSENT'
-    contracts_pass=tests.wasSuccessful() and upstream.returncode==0 and report['routing']['passed']
+    contracts_pass=(
+        tests.wasSuccessful()
+        and upstream.returncode==0
+        and report['routing']['passed']
+        and report['kicad_constraints']['passed']
+    )
     report['status']='OFFLINE_CONTRACTS_PASS_WITH_STOCK_STARTUP_AND_TOOLCHAIN_BLOCKERS' if contracts_pass else 'OFFLINE_CONTRACT_FAILURE'
     (ROOT/'validation/twin-report.json').write_text(json.dumps(report,indent=2)+'\n')
     (ROOT/'validation/stock-report.json').write_text(json.dumps(report['stock'],indent=2)+'\n')
