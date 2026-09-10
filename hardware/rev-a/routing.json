@@ -1,0 +1,184 @@
+{
+  "revision": "rev-a-routing-contract-1",
+  "status": "PROVISIONAL_CONSTRAINT_MODEL_NOT_FABRICATION_READY",
+  "source_board_revision": "rev-a-digital-twin-1",
+  "board_outline_mm": {
+    "width": 22.039834,
+    "length": 33.6804,
+    "evidence": "FAB_OUTPUT",
+    "source": "mechanical/rev-a/review/dimensions.json"
+  },
+  "components": {
+    "ASM2464PD": {
+      "refdes": "U2",
+      "center_mm": [13.6672574, 14.8704808],
+      "placement_evidence": "FAB_OUTPUT"
+    },
+    "SPI_FLASH": {
+      "refdes": "U31",
+      "part": "ZD25WQ16CEIGR",
+      "center_mm": [20.9301842, 20.2771502],
+      "placement_evidence": "FAB_OUTPUT",
+      "pinout_status": "BLOCKED_AUTHORITATIVE_FLASH_DATASHEET"
+    },
+    "USB_C": {
+      "center_mm": [11.0699804, 29.187267],
+      "placement_evidence": "FAB_OUTPUT",
+      "refdes_status": "UNRESOLVED"
+    },
+    "M2_2230": {
+      "center_mm": [11.0238794, 4.6976538],
+      "placement_evidence": "FAB_OUTPUT",
+      "refdes_status": "UNRESOLVED"
+    },
+    "SERVICE": {
+      "placement_status": "UNPLACED_FOOTPRINT_NOT_LOCKED",
+      "logical_connector": "keyed_2x5_1.27mm_or_equivalent",
+      "evidence": "ASSUMED"
+    }
+  },
+  "service_connector": {
+    "status": "PROVISIONAL",
+    "evidence": "ASSUMED",
+    "pins": {
+      "1": "GND",
+      "2": "VREF_SENSE",
+      "3": "ASM_UART_TX",
+      "4": "ASM_UART_RX",
+      "5": "ASM_RST_N",
+      "6": "ASM_SPI_CS_N",
+      "7": "ASM_SPI_CLK",
+      "8": "ASM_SPI_DI",
+      "9": "ASM_SPI_DO",
+      "10": "GND"
+    }
+  },
+  "debug_routes": [
+    {
+      "name": "ASM_UART_TX",
+      "class": "low_speed_debug",
+      "asm_ball": "B21",
+      "service_pin": 3,
+      "path": ["ASM2464PD", "OPTIONAL_SERIES_LINK", "SERVICE"],
+      "evidence": "DATASHEET",
+      "constraints": ["KEEP_SHORT", "SOLID_GROUND_REFERENCE", "SEPARATE_FROM_USB4_PAIRS"]
+    },
+    {
+      "name": "ASM_UART_RX",
+      "class": "low_speed_debug",
+      "asm_ball": "A21",
+      "service_pin": 4,
+      "path": ["SERVICE", "OPTIONAL_SERIES_LINK", "ASM2464PD"],
+      "evidence": "DATASHEET",
+      "constraints": ["KEEP_SHORT", "SOLID_GROUND_REFERENCE", "SEPARATE_FROM_USB4_PAIRS"]
+    },
+    {
+      "name": "ASM_RST_N",
+      "class": "low_speed_control",
+      "asm_ball": "H1",
+      "service_pin": 5,
+      "path": ["SERVICE", "ASM2464PD"],
+      "evidence": "DATASHEET",
+      "electrical_drive_status": "UNRESOLVED",
+      "constraints": ["NO_ASSUMED_TRISTATE_BEHAVIOR"]
+    },
+    {
+      "name": "ASM_SPI_CS_N",
+      "class": "spi_flash",
+      "asm_ball": "A2",
+      "service_pin": 6,
+      "normal_path": ["ASM2464PD", "CS_N_REMOVABLE_SHUNT", "SPI_FLASH"],
+      "programmer_attachment": "FLASH_SIDE_OF_ISOLATION",
+      "flash_pin_status": "UNRESOLVED_AUTHORITATIVE_PINOUT",
+      "evidence": "DATASHEET"
+    },
+    {
+      "name": "ASM_SPI_CLK",
+      "class": "spi_flash",
+      "asm_ball": "A5",
+      "service_pin": 7,
+      "normal_path": ["ASM2464PD", "CLK_REMOVABLE_SHUNT", "SPI_FLASH"],
+      "programmer_attachment": "FLASH_SIDE_OF_ISOLATION",
+      "flash_pin_status": "UNRESOLVED_AUTHORITATIVE_PINOUT",
+      "evidence": "DATASHEET"
+    },
+    {
+      "name": "ASM_SPI_DI",
+      "class": "spi_flash",
+      "asm_ball": "A4",
+      "service_pin": 8,
+      "normal_path": ["ASM2464PD", "MOSI_REMOVABLE_SHUNT", "SPI_FLASH"],
+      "programmer_attachment": "FLASH_SIDE_OF_ISOLATION",
+      "flash_pin_status": "UNRESOLVED_AUTHORITATIVE_PINOUT",
+      "evidence": "DATASHEET",
+      "direction_note": "Project naming is ASM-relative; flash pin direction remains blocked pending authoritative U31 pinout."
+    },
+    {
+      "name": "ASM_SPI_DO",
+      "class": "spi_flash",
+      "asm_ball": "A3",
+      "service_pin": 9,
+      "normal_path": ["ASM2464PD", "MISO_REMOVABLE_SHUNT", "SPI_FLASH"],
+      "programmer_attachment": "FLASH_SIDE_OF_ISOLATION",
+      "flash_pin_status": "UNRESOLVED_AUTHORITATIVE_PINOUT",
+      "evidence": "DATASHEET",
+      "direction_note": "Project naming is ASM-relative; flash pin direction remains blocked pending authoritative U31 pinout."
+    }
+  ],
+  "high_speed_domains": {
+    "USB4": {
+      "placement_endpoints": ["USB_C", "ASM2464PD"],
+      "topology_status": "BLOCKED_EXACT_REFERENCE_NETMAP_UNEXTRACTED",
+      "geometry_status": "UNROUTED",
+      "evidence": "INFERRED",
+      "constraints": [
+        "STACKUP_REQUIRED_BEFORE_TRACE_WIDTH_OR_GAP",
+        "TARGET_DIFFERENTIAL_IMPEDANCE_REQUIRED",
+        "CONTINUOUS_REFERENCE_PLANE",
+        "TRACK_INTRA_PAIR_SKEW",
+        "TRACK_INTER_PAIR_SKEW_WHERE_APPLICABLE",
+        "MINIMIZE_VIAS_AND_STUBS",
+        "AVOID_RETURN_PATH_DISCONTINUITIES",
+        "KEEP_AWAY_FROM_SWITCH_NODE_NOISE",
+        "NO_DEBUG_STUBS"
+      ],
+      "actual_metrics": {
+        "trace_length_mm": null,
+        "pair_skew_mm": null,
+        "via_count": null,
+        "target_diff_ohms": null
+      }
+    },
+    "PCIE": {
+      "placement_endpoints": ["ASM2464PD", "M2_2230"],
+      "topology_status": "BLOCKED_EXACT_REFERENCE_NETMAP_UNEXTRACTED",
+      "geometry_status": "UNROUTED",
+      "evidence": "INFERRED",
+      "constraints": [
+        "STACKUP_REQUIRED_BEFORE_TRACE_WIDTH_OR_GAP",
+        "TARGET_DIFFERENTIAL_IMPEDANCE_REQUIRED",
+        "CONTINUOUS_REFERENCE_PLANE",
+        "TRACK_INTRA_PAIR_SKEW",
+        "TRACK_INTER_PAIR_SKEW_WHERE_APPLICABLE",
+        "MINIMIZE_VIAS_AND_STUBS",
+        "AVOID_RETURN_PATH_DISCONTINUITIES",
+        "KEEP_AWAY_FROM_SWITCH_NODE_NOISE",
+        "NO_DEBUG_STUBS"
+      ],
+      "actual_metrics": {
+        "trace_length_mm": null,
+        "pair_skew_mm": null,
+        "via_count": null,
+        "target_diff_ohms": null
+      }
+    }
+  },
+  "unresolved_gates": [
+    "EXTRACT_REFERENCE_SCHEMATIC_NETMAP_FOR_USB4_PCIE_AND_U31",
+    "CONFIRM_U31_AUTHORITATIVE_PINOUT_AND_SUPPLY",
+    "SELECT_MANUFACTURING_STACKUP_AND_DIELECTRIC_DATA",
+    "SET_USB4_PCIE_IMPEDANCE_AND_SKEW_BUDGETS_FROM_APPLICABLE_SPECS_AND_STACKUP",
+    "LOCK_SERVICE_CONNECTOR_FOOTPRINT_AND_PLACEMENT",
+    "PROVE_RESET_TIME_SPI_BUS_OWNERSHIP_ELECTRICALLY"
+  ]
+}
