@@ -1,0 +1,66 @@
+{
+  "status": "CORROBORATING_VENDOR_FAMILY_EVIDENCE_NOT_REV_A_REQUIREMENTS",
+  "source_repository": "openchips/JITx-ASM2464PDX_design",
+  "source_commit": "0ef6ff9c09ce494f2fef8ad62c931fc61d817662",
+  "guide_path": "documentation/ASM2464PDX GEN4 2/High-speed signal Design Guide 1 2.pdf",
+  "guide_sha256": "ef15e5e7d2d3aa94f1e898dc39f43f69e040e1077afad561455f9b3b969b0d92",
+  "page_count": 111,
+  "source_scope": "ASM2464PDX_VARIANT_UNTIL_DOCUMENT_TEXT_PROVES_BROADER_APPLICABILITY",
+  "extraction_provenance": {
+    "workflow": ".github/workflows/asmedia-layout-guide-extract.yml",
+    "run_id": 34423506240,
+    "artifact_id": 10131769108,
+    "artifact_zip_sha256": "6b5f07e57c48a00a3e5fe7c3d0d976fd6cc39ef8635a2a8361cc6c161a2dd2f2",
+    "extractor": "pypdf 6.0.0 layout mode",
+    "limitations": [
+      "Text extraction is diagnostic and does not recover all dimensions embedded in figures.",
+      "No rule in this file is automatically transferable to ASM2464PD Rev-A.",
+      "Numeric figure annotations are recorded as tested/reference values, not recommended Rev-A design values."
+    ]
+  },
+  "observations": [
+    {
+      "pages": [33, 34, 35],
+      "board_layers": 4,
+      "topic": "differential_via_reference_void",
+      "observation": "The guide compares differential-via reference void approaches and concludes the SI-suggested void is better than a circular void in frequency and time domain.",
+      "transfer_status": "QUALITATIVE_CORROBORATION_ONLY"
+    },
+    {
+      "pages": [36, 37, 38],
+      "board_layers": 6,
+      "topic": "differential_via_reference_void",
+      "observation": "The guide gives the same qualitative conclusion for a 6-layer board: the SI-suggested void is better than a circular void in frequency and time domain.",
+      "transfer_status": "QUALITATIVE_CORROBORATION_ONLY"
+    },
+    {
+      "pages": [98, 99, 100],
+      "board_layers": 4,
+      "topic": "balanced_ground_vias",
+      "observation": "Balanced GND vias are reported to have lower Scd21 than the unbalanced arrangement in the guide's 4-layer comparison.",
+      "transfer_status": "QUALITATIVE_CORROBORATION_ONLY"
+    },
+    {
+      "pages": [102, 103, 104],
+      "board_layers": 4,
+      "topic": "ground_via_to_signal_via_spacing",
+      "tested_spacing_mil": [35, 50, 75, 100],
+      "observation": "The guide evaluates several GND-via-to-signal-via spacings and reports that time-domain impedance increases as the spacing increases.",
+      "transfer_status": "TESTED_REFERENCE_VALUES_NOT_REV_A_RULE"
+    },
+    {
+      "pages": [106, 107, 108, 109, 110],
+      "board_layers": 4,
+      "topic": "routing_corner_geometry",
+      "observation": "The guide compares arc routing with a 135-degree-angle route and reports the arc implementation as better for the evaluated 4-layer case.",
+      "transfer_status": "QUALITATIVE_CORROBORATION_ONLY"
+    }
+  ],
+  "explicit_non_promotions": [
+    "NO_REV_A_TRACE_WIDTH_FROM_THIS_GUIDE",
+    "NO_REV_A_PAIR_GAP_FROM_THIS_GUIDE",
+    "NO_REV_A_SKEW_LIMIT_FROM_THIS_GUIDE",
+    "NO_REV_A_VIA_SPACING_RULE_FROM_FIGURE_TEST_VALUES",
+    "NO_ASM2464PD_APPLICABILITY_CLAIM_FROM_ASM2464PDX_PATH_NAME"
+  ]
+}
