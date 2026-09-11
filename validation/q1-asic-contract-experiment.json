@@ -1,0 +1,134 @@
+{
+  "schema": 1,
+  "source_authority": {
+    "opal_repository": "mewmix/asm2464pd-opal",
+    "opal_branch": "agent/stock-reset-to-identify",
+    "opal_commit": "48651a400ec50bdfb89462e0a8bb2c9d6f9d424b",
+    "firmware_sha256": "1a4734745f0c00235754a00bd7e3e995064e1e6ae6f88a6aff163683a22d0037",
+    "enclosure_branch": "agent/q1-stock-contract-twin-probe",
+    "candidate_test_commit": "b0864e8998da40331236add224c3d7bac5169dc4",
+    "pinned_imported_opal_commit": "da87259d6bc0e2b86ff8bd0deb22938bd9fa89d7"
+  },
+  "candidate_contract": {
+    "b26x_decode": {
+      "rule": "queue_base = ((msb << 8) | lsb) << 12",
+      "admin_sq": "0x00800000",
+      "admin_cq": "0x00808000",
+      "io_sq": "0x00820000",
+      "io_cq": "0x00828000",
+      "classification": "SUPPORTED_BY_TWIN"
+    },
+    "queue_geometry": {
+      "io_depth": 32,
+      "qid": 1,
+      "cqid": 1,
+      "source": "authoritative Create Queue evidence; not inferred from B26x",
+      "classification": "SUPPORTED_BY_TWIN"
+    },
+    "producer_semantics": {
+      "rule": "newly available slots are ring interval [old_hardware_producer, B251)",
+      "first_read": "0 -> 1 consumes slot 0",
+      "wrap": "31 -> 0 consumes slot 31",
+      "batching": true,
+      "classification": "SUPPORTED_BY_TWIN"
+    },
+    "staging_transport": {
+      "context0_base": "0xA000",
+      "context1_base": "0xA800",
+      "stride": 64,
+      "candidate_downstream_address": "sq_base + slot * 64",
+      "first_read_candidate_downstream_address": "0x00820000",
+      "classification": "SUPPORTED_BY_TWIN",
+      "physical_semantics": "STILL_AMBIGUOUS"
+    },
+    "prp_model": {
+      "stock_prp1": "0x00200000",
+      "model": "abstract sparse host/PCIe address space",
+      "implicit_xdata_a400_mapping": false,
+      "implicit_legacy_0x00820400_mapping": false,
+      "classification": "SUPPORTED_BY_TWIN",
+      "physical_translation": "STILL_AMBIGUOUS"
+    },
+    "media_model": {
+      "type": "deterministic 512-byte model-input block",
+      "classification": "MODEL_INPUT_ONLY"
+    },
+    "cq_internal_model": {
+      "depth": 32,
+      "phase_toggles_on_wrap": true,
+      "classification": "SUPPORTED_BY_TWIN"
+    },
+    "cq_projection": {
+      "bytes": "B80C/B80D identifier; B80E/B80F encode phase, SC, SCT using the established firmware extraction equations",
+      "classification": "SUPPORTED_BY_TWIN",
+      "physical_shadow_population": "STILL_AMBIGUOUS"
+    },
+    "event_model": {
+      "implemented": false,
+      "candidates": ["polling only", "C806.5", "CEF3.3", "INT0 bridge"],
+      "classification": "STILL_AMBIGUOUS"
+    },
+    "consumer_semantics": {
+      "rule": "release ring interval [old_consumer, next_consumer)",
+      "batching": true,
+      "classification": "SUPPORTED_BY_TWIN"
+    }
+  },
+  "experiments": {
+    "legacy_exact_stock_selector": {
+      "result": "B254=0x03 does not reach legacy Q1 consumer",
+      "classification": "CONTRADICTED_BY_TWIN_FOR_LEGACY_SHORTCUT"
+    },
+    "legacy_exact_stock_prp": {
+      "result": "forcing legacy helper with PRP1=0x00200000 does not transfer payload",
+      "classification": "CONTRADICTED_BY_TWIN_FOR_LEGACY_SHORTCUT"
+    },
+    "legacy_control": {
+      "result": "historical PRP1=0x00820400 transfers through legacy synthetic A400 path",
+      "classification": "MODEL_CONTROL_ONLY"
+    },
+    "b26x_decode": "PASS",
+    "exact_stock_read_decode": "PASS",
+    "producer_0_to_1": "PASS",
+    "producer_wrap_31_to_0": "PASS",
+    "multi_entry_producer": "PASS",
+    "stock_prp_host_memory": "PASS",
+    "no_implicit_a400_mapping": "PASS",
+    "cq_projection": "PASS",
+    "phase_wrap": "PASS",
+    "batched_consumer": "PASS",
+    "repeated_zero_distance_consumer": "PASS",
+    "interrupt_candidate": "NOT_MODELED_STILL_AMBIGUOUS",
+    "generation_churn": "EXISTING_TWIN_REGRESSION_PASSED; CANDIDATE_ENGINE_TOKENIZATION_NOT_YET_MODELED"
+  },
+  "validation": {
+    "github_actions_run_id": 34613866006,
+    "twin_tests_run": 72,
+    "twin_failures": 0,
+    "twin_errors": 0,
+    "upstream_model_tests_run": 19,
+    "upstream_model_exit_code": 0,
+    "generic_fault_cases": 18,
+    "generic_fault_passed": 17,
+    "generic_fault_unsupported": ["invalid firmware hash"],
+    "status": "OFFLINE_CONTRACTS_PASS_WITH_STOCK_STARTUP_AND_TOOLCHAIN_BLOCKERS"
+  },
+  "classification": {
+    "overall": "SUPPORTED_BY_TWIN",
+    "legacy_q1_shortcut": "CONTRADICTED_BY_TWIN",
+    "physical_dma": "STILL_AMBIGUOUS",
+    "physical_cq_projection": "STILL_AMBIGUOUS",
+    "physical_event_irq": "STILL_AMBIGUOUS"
+  },
+  "remaining_ambiguity": [
+    "Whether B26x registers physically program queue bases or merely correlate with them",
+    "How A000/A800 staging is consumed by the real ASIC",
+    "Physical translation/backing of PRP1 0x00200000",
+    "How downstream CQ state becomes visible through C8D5 and B80C-B80F",
+    "What hardware action asserts C806.5, CEF3.3, and/or INT0",
+    "Exact generation/ownership token behavior inside the physical ASIC"
+  ],
+  "physical_evidence_claimed": false,
+  "hardware_touched": false,
+  "authoritative_semantics_changed": false
+}
