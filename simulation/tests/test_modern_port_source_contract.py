@@ -74,7 +74,7 @@ class ModernPortTwinContract(unittest.TestCase):
         self.assertEqual(e.host_memory.read(0xA400, 512), bytes(512))
         self.assertEqual(e.host_memory.read(0x00820400, 512), bytes(512))
         c = e.project_completion(0)
-        self.assertEqual(c[0:2], b"\\x01\\x01")
+        self.assertEqual(c[0:2], bytes((1, 1)))
         self.assertEqual(c[2] & 1, 1)
         self.assertEqual(e.notify_consumer(1), [0])
 
