@@ -10,10 +10,11 @@ IO = (ROOT / "validation/modern-port-fixtures/nvme_io.h").read_text()
 ADMIN = (ROOT / "validation/modern-port-fixtures/nvme_admin.h").read_text()
 
 def define(text, name):
-    m = re.search(r"^#define\\s+" + re.escape(name) + r"\\s+([^\\s/]+)", text, re.M)
-    if not m:
-        raise AssertionError(f"missing define {name}")
-    return m.group(1)
+    for line in text.splitlines():
+        parts = line.split()
+        if len(parts) >= 3 and parts[0] == "#define" and parts[1] == name:
+            return parts[2]
+    raise AssertionError(f"missing define {name}")
 
 def intval(token):
     token = token.rstrip("ULul")
